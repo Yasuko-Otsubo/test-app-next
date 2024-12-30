@@ -1,9 +1,8 @@
-'use client'
+"use client";
 
 import React from "react";
-import Link from 'next/link'
-import styles from './styles.module.css';
-
+import Link from "next/link";
+import styles from "./styles.module.css";
 
 const Header: React.FC = () => {
   return (
@@ -11,10 +10,14 @@ const Header: React.FC = () => {
       <nav>
         <ul className={styles.h_ul}>
           <li>
-            <Link className={styles.h_link} href="/">Blog</Link>
+            <Link className={styles.h_link} href="/">
+              Blog
+            </Link>
           </li>
           <li>
-            <Link className={styles.h_link} href="/FormPage">お問い合わせ</Link>
+            <Link className={styles.h_link} href="/contact">
+              お問い合わせ
+            </Link>
           </li>
         </ul>
       </nav>
