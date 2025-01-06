@@ -1,82 +1,77 @@
 "use client";
 
-import styles from "./page.module.css";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import Header from "./_components/Header";
+import { useEffect, useState } from 'react';
+import styles from './page.module.css';
+import Link from 'next/link';
+import { MicroCmsPost } from './_types/MicroCmsPost';
 
-type Post = {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  categories: string[];
+
+
+//テキストの文字数と改行文字の変換
+const truncateText = (text: string, maxLength: number) => {
+  // <br>タグを改行文字に変換
+  const cleanText = text.replace(/<br\s*\/?>/g, '\n').trim();
+  if (cleanText.length <= maxLength) {
+    return cleanText;
+  }
+  return cleanText.substring(0, maxLength) + '...';
 };
 
-export default function Home() {
-  //テキストの文字数と改行文字の変換
-  const truncateText = (text: string, maxLength: number) => {
-    // <br>タグを改行文字に変換
-    const cleanText = text.replace(/<br\s*\/?>/g, "\n").trim();
-    if (cleanText.length <= maxLength) {
-      return cleanText;
-    }
-    return cleanText.substring(0, maxLength) + "...";
-  };
-  //データ用の状態管理
-  const [posts, setPosts] = useState<Post[] | null>(null);
 
-  type ApiResponse = {
-    posts: Post[] | [];
-  };
-  // APIでpostsを取得する処理をuseEffectで実行します。
+const Home: React.FC = () =>{
+
+  //データ用の状態管理
+  const [posts, setPosts] = useState<MicroCmsPost[] | null >([]);
+
   useEffect(() => {
     const fetcher = async () => {
-      try {
-        // APIを呼び出してデータを取得する処理
-        const res = await fetch(
-          "https://1hmfpsvto6.execute-api.ap-northeast-1.amazonaws.com/dev/posts"
-        );
-        const data: ApiResponse = await res.json();
-        setPosts(data.posts); // postsが存在することを確認
-      } catch (error) {
-        console.log("接続できませんでした。", error);
-        setPosts([]);
-      }
+      const res = await fetch('https://vz534fnsc5.microcms.io/api/v1/posts', {　// 管理画面で取得したエンドポイントを入力してください。
+        headers: {　// fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します。
+          'X-MICROCMS-API-KEY': '7cesolS8yyb8n8dZUEtFK7JIklzEwu4jVH9t', // 管理画面で取得したAPIキーを入力してください。
+        },
+      });
+      
+      const { contents } = await res.json();
+
+      setPosts(contents);
+      console.log(contents);  // レスポンス内容を確認
+
+      
     };
+
     fetcher();
   }, []);
-  if (posts === null) {
-    return <p className={styles.h_loading}>データ取得中・・・</p>;
-  }
-  if (posts.length === 0) {
-    return <p className={styles.h_loading}>ブログが見つかりません。</p>;
-  }
+
+
+    if(posts === null){
+      return <p className={styles.h_loading}>データ取得中・・・</p>;
+    }
+    if (posts.length === 0 ) {
+      return <p className={styles.h_loading}>ブログが見つかりません。</p>;
+    }
 
   return (
-    <>
-      <div className={styles.h_main}>
-        {posts.map((post) => (
-          <article className={styles.h_sec} key={post.id}>
-            <Link className={styles.h_link} href={`/posts/${post.id}`}>
-              <div className={styles.h_sec_upper}>
-                <time className={styles.h_time}>
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </time>
-                <div className={styles.h_category}>
-                  {post.categories.map((category) => (
-                    <div className={styles.h_cate_area} key={category}>
-                      {category}
-                    </div>
-                  ))}
+    <div className={styles.h_main}>
+      {posts.map((post) => (
+        <article className={styles.h_sec} key={post.id}>
+          <Link className={styles.h_link} href={`/posts/${post.id}`}>
+          <div className={styles.h_sec_upper}>
+            <time className={styles.h_time}>{new Date(post.createdAt).toLocaleDateString()}</time>
+            <div className={styles.h_category}>
+              {post.categories.map((category) => (
+              <div className={styles.h_cate_area} key={category.id}>
+                {category.name}
                 </div>
-              </div>
-              <h2 className={styles.h2}>{post.title}</h2>
-              <p className={styles.h_p}>{truncateText(post.content, 56)}</p>
-            </Link>
+              ))}
+            </div>
+          </div>
+          <h2 className={styles.h2}>{post.title}</h2>
+          <p className={styles.h_p}dangerouslySetInnerHTML={{ __html: truncateText(post.content, 56) }}></p>
+          </Link>
           </article>
-        ))}
-      </div>
-    </>
-  );
-}
+      ))}
+    </div>
+  );  
+};
+export default Home; 
+

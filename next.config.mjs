@@ -4,9 +4,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'placehold.jp', // この行を追加
-      }
-
+        hostname: 'placehold.jp' // この行を追加
+      },
+      { 
+        protocol: 'https',
+        hostname: 'images.microcms-assets.io'
+      }, // これを追加
     ],
   },
 };

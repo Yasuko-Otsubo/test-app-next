@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import styles from "./_styles/styles.module.css";
-import Header from "@/app/_components/Header";
 
-const contact: React.FC = () => {
+const Contact: React.FC = () => {
   type Contact = {
     name: string;
     email: string;
@@ -34,7 +33,7 @@ const contact: React.FC = () => {
     email: "",
     text: "",
   });
-
+ 
   //フォームのクリア処理
   const clearForm = () => {
     setForm({ name: "", email: "", text: "" });
@@ -216,4 +215,4 @@ const contact: React.FC = () => {
   );
 };
 
-export default contact;
+export default Contact;
