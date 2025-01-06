@@ -39,7 +39,7 @@ const BlogPage: React.FC = () => {
         `https://vz534fnsc5.microcms.io/api/v1/posts/${id}`,　// microCMSのエンドポイント
         {
           headers: {
-            'X-MICROCMS-API-KEY': '7cesolS8yyb8n8dZUEtFK7JIklzEwu4jVH9t', // APIキーをセット
+            'X-MICROCMS-API-KEY': process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string, // 管理画面で取得したAPIキーを入力してください。
           },
         },
       )

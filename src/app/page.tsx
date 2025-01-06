@@ -27,7 +27,7 @@ const Home: React.FC = () =>{
     const fetcher = async () => {
       const res = await fetch('https://vz534fnsc5.microcms.io/api/v1/posts', {　// 管理画面で取得したエンドポイントを入力してください。
         headers: {　// fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します。
-          'X-MICROCMS-API-KEY': '7cesolS8yyb8n8dZUEtFK7JIklzEwu4jVH9t', // 管理画面で取得したAPIキーを入力してください。
+          'X-MICROCMS-API-KEY': process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string, // 管理画面で取得したAPIキーを入力してください。
         },
       });
       
