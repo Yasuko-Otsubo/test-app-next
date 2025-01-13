@@ -1,95 +1,77 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from 'react';
+import styles from './page.module.css';
+import Link from 'next/link';
+import { MicroCmsPost } from './_types/MicroCmsPost';
+
+
+
+//テキストの文字数と改行文字の変換
+const truncateText = (text: string, maxLength: number) => {
+  // <br>タグを改行文字に変換
+  const cleanText = text.replace(/<br\s*\/?>/g, '\n').trim();
+  if (cleanText.length <= maxLength) {
+    return cleanText;
+  }
+  return cleanText.substring(0, maxLength) + '...';
+};
+
+
+const Home: React.FC = () =>{
+
+  //データ用の状態管理
+  const [posts, setPosts] = useState<MicroCmsPost[] | null >([]);
+
+  useEffect(() => {
+    const fetcher = async () => {
+      const res = await fetch('https://vz534fnsc5.microcms.io/api/v1/posts', {　// 管理画面で取得したエンドポイントを入力してください。
+        headers: {　// fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します。
+          'X-MICROCMS-API-KEY': process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string, // 管理画面で取得したAPIキーを入力してください。
+        },
+      });
+      
+      const { contents } = await res.json();
+
+      setPosts(contents);
+      console.log(contents);  // レスポンス内容を確認
+
+      
+    };
+
+    fetcher();
+  }, []);
+
+
+    if(posts === null){
+      return <p className={styles.h_loading}>データ取得中・・・</p>;
+    }
+    if (posts.length === 0 ) {
+      return <p className={styles.h_loading}>ブログが見つかりません。</p>;
+    }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div className={styles.h_main}>
+      {posts.map((post) => (
+        <article className={styles.h_sec} key={post.id}>
+          <Link className={styles.h_link} href={`/posts/${post.id}`}>
+          <div className={styles.h_sec_upper}>
+            <time className={styles.h_time}>{new Date(post.createdAt).toLocaleDateString()}</time>
+            <div className={styles.h_category}>
+              {post.categories.map((category) => (
+              <div className={styles.h_cate_area} key={category.id}>
+                {category.name}
+                </div>
+              ))}
+            </div>
+          </div>
+          <h2 className={styles.h2}>{post.title}</h2>
+          <p className={styles.h_p}dangerouslySetInnerHTML={{ __html: truncateText(post.content, 56) }}></p>
+          </Link>
+          </article>
+      ))}
     </div>
-  );
-}
+  );  
+};
+export default Home; 
+
