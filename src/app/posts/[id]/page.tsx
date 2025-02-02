@@ -5,7 +5,7 @@ import styles from "../styles/styles.module.css";
 import { useParams } from "next/navigation";
 //import Header from "@/app/_components/Header";
 import Image from "next/image";
-import { MicroCmsPost } from "@/app/_types/MicroCmsPost";
+import { MicroCmsPost } from "@/_types/MicroCmsPost";
 
 //APIレスポンスがどのようなデータ構造を持つかを定義
 //type ApiResponse = {
@@ -34,60 +34,60 @@ const BlogPage: React.FC = () => {
   ///////////////////////コンポーネントが初期化される、またはidが変更されるとuseEffectが実行///////////////////////
   useEffect(() => {
     const fetcher = async () => {
-
       const res = await fetch(
-        `https://vz534fnsc5.microcms.io/api/v1/posts/${id}`,　// microCMSのエンドポイント
+        `https://vz534fnsc5.microcms.io/api/v1/posts/${id}`, // microCMSのエンドポイント
         {
           headers: {
-            'X-MICROCMS-API-KEY': process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string, // 管理画面で取得したAPIキーを入力してください。
+            "X-MICROCMS-API-KEY": process.env
+              .NEXT_PUBLIC_MICRO_CMS_API_KEY as string, // 管理画面で取得したAPIキーを入力してください。
           },
-        },
-      )
-      const data = await res.json()
-      setPost(data) // dataをそのままセット
-      setLoading(false)
-    }
+        }
+      );
+      const data = await res.json();
+      setPost(data); // dataをそのままセット
+      setLoading(false);
+    };
 
-    fetcher()
-  }, [id])
+    fetcher();
+  }, [id]);
 
   // エラーハンドリング
-//  if (error) {
-//    return <p className={styles.b_p}>{error}</p>;
-//  }
-if(loading) {
+  //  if (error) {
+  //    return <p className={styles.b_p}>{error}</p>;
+  //  }
+  if (loading) {
     return <p className={styles.b_p}>記事読み込み中</p>;
-}
-if(post === null) {
-  return <p className={styles.b_p}>記事ありません</p>;
-}
+  }
+  if (post === null) {
+    return <p className={styles.b_p}>記事ありません</p>;
+  }
 
   return (
     <>
       <div className={styles.blogpage}>
-          <>
-            <Image
-              className={styles.b_img}
-              src={post.thumbnail.url}
-              width={800}
-              height={400}
-              alt="Thumbnail"
-            />
-            <div className={styles.b_sub}>
-              <time className={styles.b_time}>
-                {new Date(post.createdAt).toLocaleDateString()}
-              </time>
-              <div className={styles.b_category}>
-                {post.categories?.map((category) => (
-                  <div className={styles.b_cate_area} key={category.id}>
-                    {category.name}
-                  </div>
-                ))}
-              </div>
+        <>
+          <Image
+            className={styles.b_img}
+            src={post.thumbnail.url}
+            width={800}
+            height={400}
+            alt="Thumbnail"
+          />
+          <div className={styles.b_sub}>
+            <time className={styles.b_time}>
+              {new Date(post.createdAt).toLocaleDateString()}
+            </time>
+            <div className={styles.b_category}>
+              {post.categories?.map((category) => (
+                <div className={styles.b_cate_area} key={category.id}>
+                  {category.name}
+                </div>
+              ))}
             </div>
-            <h2 className={styles.h2}>{post.title}</h2>
-            <p dangerouslySetInnerHTML={{ __html: post.content }}></p>
-          </>
+          </div>
+          <h2 className={styles.h2}>{post.title}</h2>
+          <p dangerouslySetInnerHTML={{ __html: post.content }}></p>
+        </>
       </div>
     </>
   );

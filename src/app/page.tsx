@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import styles from './page.module.css';
-import Link from 'next/link';
-import { MicroCmsPost } from './_types/MicroCmsPost';
-
+import { useEffect, useState } from "react";
+import styles from "./page.module.css";
+import Link from "next/link";
+import { MicroCmsPost } from "../_types/MicroCmsPost";
 
 // テキストの文字数と改行文字の変換
 const truncateText = (text: string, maxLength: number) => {
   // <br>タグを改行文字に変換
-  const cleanText = text.replace(/<br\s*\/?>/g, '\n').trim();
+  const cleanText = text.replace(/<br\s*\/?>/g, "\n").trim();
   if (cleanText.length <= maxLength) {
     return cleanText;
   }
-  return cleanText.substring(0, maxLength) + '...';
+  return cleanText.substring(0, maxLength) + "...";
 };
 
 const Home: React.FC = () => {
@@ -23,22 +22,21 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetcher = async () => {
       try {
-        const res = await fetch('/api/posts');
+        const res = await fetch("/api/posts");
 
-        
         if (!res.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
 
         const { contents } = await res.json();
         if (!contents) {
-          throw new Error('No contents found');
+          throw new Error("No contents found");
         }
 
         setPosts(contents);
         console.log(contents);
       } catch (error) {
-        console.error('Fetch error:', error);
+        console.error("Fetch error:", error);
         setPosts([]); // エラー時に空の配列を設定
       }
     };
@@ -59,7 +57,9 @@ const Home: React.FC = () => {
         <article className={styles.h_sec} key={post.id}>
           <Link className={styles.h_link} href={`/posts/${post.id}`}>
             <div className={styles.h_sec_upper}>
-              <time className={styles.h_time}>{new Date(post.createdAt).toLocaleDateString()}</time>
+              <time className={styles.h_time}>
+                {new Date(post.createdAt).toLocaleDateString()}
+              </time>
               <div className={styles.h_category}>
                 {post.categories.map((category) => (
                   <div className={styles.h_cate_area} key={category.id}>
@@ -69,7 +69,12 @@ const Home: React.FC = () => {
               </div>
             </div>
             <h2 className={styles.h2}>{post.title}</h2>
-            <p className={styles.h_p} dangerouslySetInnerHTML={{ __html: truncateText(post.content, 56) }}></p>
+            <p
+              className={styles.h_p}
+              dangerouslySetInnerHTML={{
+                __html: truncateText(post.content, 56),
+              }}
+            ></p>
           </Link>
         </article>
       ))}
