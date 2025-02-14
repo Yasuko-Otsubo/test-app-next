@@ -88,3 +88,4 @@ export const DELETE = async (
       return NextResponse.json({ status: error.message }, { status: 400 })
   }
 }
+

@@ -5,3 +5,8 @@ export interface Category {
   updatedAt : string
   //posts     PostCategory[]
 }
+
+
+export interface PostCategory {
+  category: Category; // Category型を持つ
+}
