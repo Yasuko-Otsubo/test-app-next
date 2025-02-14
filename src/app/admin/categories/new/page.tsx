@@ -1,15 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css"
 import { useRouter } from "next/navigation";
+import { Category } from "@/_types/Categories";
 
 const CategoryNewPage: React.FC = () => {
   const [name, setName] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+
+  useEffect (() => {
+    const fetchCategories = async() => {
+      const res = await fetch("/api/admin/categories");
+      const data = await res.json();
+      setCategories(data.categories);
+    };
+    fetchCategories();
+  }, []);
 
     const handleSubmit = async(e: React.FormEvent) => {
       e.preventDefault();
+
+      if(categories.find(category => category.name === name)) {
+        setErrorMessage("このカテゴリー名は重複しています。別の名前を使用してください");
+        return;
+      }
   
   try {
     const res = await fetch('/api/admin/categories', {
@@ -36,6 +53,7 @@ const CategoryNewPage: React.FC = () => {
         <label>カテゴリー</label>
         <input type="text" id="category" value={name} onChange={(e) => setName(e.target.value)}/>
       </div>
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
       <div className={styles.n_btn}>
         <button type="submit" className={styles.put}>作成</button>
       </div>

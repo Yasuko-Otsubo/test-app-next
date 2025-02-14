@@ -11,7 +11,6 @@ const BlogNewPage: React.FC = () => {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [categories, setCategories] = useState<{ id: number }[]>([]); // カテゴリーをオブジェクトの配列として管理
   const [allCategories, setAllCategories] = useState<Category[]>([]);
-  const [allPosts, setAllPosts] = useState<{title: string}[]>([]);//記事投稿保持
   const router = useRouter();
 
   useEffect(() => {
@@ -26,23 +25,8 @@ const BlogNewPage: React.FC = () => {
       }
     };
 
-    const fetchPost = async() => {
-      try {
-        const res = await fetch(`/api/admin/posts`);
-        const data = await res.json();
-        setAllPosts(data.posts);
-      } catch ( error ) {
-        console.log("投稿失敗", error);
-        alert ("投稿に失敗しました。");
-      }
-    };
-
     fetchCategories();
-    fetchPost();
   },[]);
-
-  //重複ちぇえく
-  const duplicateTitle = allPosts.some(post => post.title === title);
 
   //カテゴリー選択
   const handleChangeCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -53,11 +37,6 @@ const BlogNewPage: React.FC = () => {
   //ページがリロードされないように e.preventDefault() を呼び出す
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if(duplicateTitle) {
-      alert ("投稿タイトルが重複しています");
-      return;
-    }
 
     try {
       const res = await fetch("/api/admin/posts", {
