@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, FormEvent } from "react";
 import styles from "../../_styles/main.module.css";
-import { useParams , useRouter } from "next/navigation";
-import { Category } from "@/_types/Categories";
+import { useParams, useRouter } from "next/navigation";
+import { Category } from "@/app/_types/Categories";
 
-const BlogEditPage : React.FC = () => {
+const BlogEditPage: React.FC = () => {
   const { id } = useParams();
   const router = useRouter();
 
@@ -16,8 +16,8 @@ const BlogEditPage : React.FC = () => {
   const [allCategories, setAllCategories] = useState<Category[]>([]);
 
   //GET
-  useEffect( () => {
-    const fetchPost = async() => {
+  useEffect(() => {
+    const fetchPost = async () => {
       try {
         const res = await fetch(`/api/admin/posts/${id}`);
         const data = await res.json();
@@ -25,8 +25,10 @@ const BlogEditPage : React.FC = () => {
         setTitle(data.post.title);
         setContent(data.post.content);
         setThumbnailUrl(data.post.thumbnailUrl);
-        setSelectCategories(data.post.postCategories.map((c : any) => c.category.id));
-      } catch ( error ) {
+        setSelectCategories(
+          data.post.postCategories.map((c: any) => c.category.id)
+        );
+      } catch (error) {
         console.log("記事の取得失敗", error);
         alert("記事取得できませんでした。");
       }
@@ -35,61 +37,59 @@ const BlogEditPage : React.FC = () => {
   }, [id]);
 
   //カテゴリー 一覧取得
-  useEffect (() => {
-    const fetchCategories  = async() => {
+  useEffect(() => {
+    const fetchCategories = async () => {
       try {
         const res = await fetch(`/api/admin/categories`);
         const data = await res.json();
         setAllCategories(data.categories);
-      } catch ( error ) {
-        console.log("カテゴリーの取得失敗" , error) ;
+      } catch (error) {
+        console.log("カテゴリーの取得失敗", error);
       }
     };
     fetchCategories();
   }, []);
 
-
   //PUT
-  const handleSubmit = async(e:FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await fetch(`/api/admin/posts/${id}` , {
-        method : "PUT",
-        headers : {"Content-type" : "application/json"},
-        body : JSON.stringify({
+      await fetch(`/api/admin/posts/${id}`, {
+        method: "PUT",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
           title,
           content,
           thumbnailUrl,
-          categories: selectCategories.map((id) => ({id})),
+          categories: selectCategories.map((id) => ({ id })),
         }),
       });
-      alert ("更新しました");
+      alert("更新しました");
       router.push("/admin/posts");
-        } catch ( error ) {
-          console.log("更新失敗", error);
-          alert("更新に失敗しました");
-        }
-      };
+    } catch (error) {
+      console.log("更新失敗", error);
+      alert("更新に失敗しました");
+    }
+  };
 
-      //DELETE
-      const handleDelete = async() =>{
-        try {
-          await fetch(`/api/admin/posts/${id}`,{
-            method : "DELETE"
-          });
-          alert("記事を削除しました");
-          router.push("/admin/posts");
-        } catch ( error ) {
-          console.log("記事削除失敗", error);
-          alert("記事の削除を失敗しました")
-        }
-      };
-
+  //DELETE
+  const handleDelete = async () => {
+    try {
+      await fetch(`/api/admin/posts/${id}`, {
+        method: "DELETE",
+      });
+      alert("記事を削除しました");
+      router.push("/admin/posts");
+    } catch (error) {
+      console.log("記事削除失敗", error);
+      alert("記事の削除を失敗しました");
+    }
+  };
 
   return (
     <>
       <div className={styles.n_main}>
-      <h2>記事編集</h2>
+        <h2>記事編集</h2>
         <form onSubmit={handleSubmit}>
           <div className={styles.n_article}>
             <label>タイトル</label>
@@ -102,8 +102,7 @@ const BlogEditPage : React.FC = () => {
           </div>
           <div className={styles.n_article}>
             <label>内容</label>
-            <input
-              type="text"
+            <textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -123,10 +122,19 @@ const BlogEditPage : React.FC = () => {
             <select
               id="category"
               value={selectCategories.map(String)} // IDの配列を文字列に
-              onChange={(e) => setSelectCategories(Array.from(e.target.selectedOptions).map((opt) => Number(opt.value)))}>
-            {allCategories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}
-              </option>  
+              onChange={(e) =>
+                setSelectCategories(
+                  Array.from(e.target.selectedOptions).map((opt) =>
+                    Number(opt.value)
+                  )
+                )
+              }
+              multiple
+            >
+              {allCategories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
             </select>
           </div>
@@ -134,7 +142,11 @@ const BlogEditPage : React.FC = () => {
             <button type="submit" className={styles.put}>
               更新
             </button>
-            <button type="button" className={styles.delete} onClick={handleDelete}>
+            <button
+              type="button"
+              className={styles.delete}
+              onClick={handleDelete}
+            >
               削除
             </button>
           </div>

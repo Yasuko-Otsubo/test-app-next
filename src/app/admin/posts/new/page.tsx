@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../../_styles/main.module.css";
-import { Category } from "@/_types/Categories";
+import { Category } from "@/app/_types/Categories";
 
 const BlogNewPage: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -14,24 +14,31 @@ const BlogNewPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCategories = async() => {
+    const fetchCategories = async () => {
       try {
         const res = await fetch(`/api/admin/categories`);
         const data = await res.json();
         setAllCategories(data.categories);
-      } catch ( error ) {
+      } catch (error) {
         console.log("カテゴリー取得失敗", error);
         alert("カテゴリーを取得できません");
       }
     };
 
     fetchCategories();
-  },[]);
+  }, []);
 
-  //カテゴリー選択
   const handleChangeCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectId = Number(e.target.value);
-    setCategories([{id: selectId}]);
+    setCategories((prev) => {
+      if (prev.some((category) => category.id === selectId)) {
+        // すでに選択されていたら削除
+        return prev.filter((category) => category.id !== selectId);
+      } else {
+        // 新しく追加
+        return [...prev, { id: selectId }];
+      }
+    });
   };
 
   //ページがリロードされないように e.preventDefault() を呼び出す
@@ -54,9 +61,7 @@ const BlogNewPage: React.FC = () => {
     } catch (error) {
       console.log("エラー:", error);
     }
-    
   };
-
 
   return (
     <>
@@ -67,14 +72,13 @@ const BlogNewPage: React.FC = () => {
             <label>タイトル</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={title} required
+              onChange={(e) => setTitle(e.target.value) }
             />
           </div>
           <div className={styles.n_article}>
             <label>内容</label>
-            <input
-              type="text"
+            <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
@@ -90,19 +94,22 @@ const BlogNewPage: React.FC = () => {
           <div className={styles.n_article}>
             <label>カテゴリー</label>
             <select
-             value={categories[0]?.id || ""}
-             
-             onChange={handleChangeCategory}>
+              value={categories.map(category => String(category.id))}
+              onChange={handleChangeCategory}
+              multiple
+            >
               <option value="">カテゴリー選択</option>
-             {allCategories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-             ))}
-           </select>
+              {allCategories.map((category) => (
+                <option key={category.id} value={category.id} >
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className={styles.n_btn}>
-            <button type="submit" className={styles.link}>作成</button>
+            <button type="submit" className={styles.link}>
+              作成
+            </button>
           </div>
         </form>
       </div>
