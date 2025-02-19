@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css";
 import { useRouter } from "next/navigation";
 import { Category } from "@/app/_types/Categories";
+import { PostForm } from "../_components/PostForm";
 
 const CategoryNewPage: React.FC = () => {
   const [name, setName] = useState("");
@@ -13,15 +14,40 @@ const CategoryNewPage: React.FC = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await fetch("/api/admin/categories");
-      const data = await res.json();
-      setCategories(data.categories);
+      try {
+        const res = await fetch("/api/admin/categories");
+        
+        if(!res.ok) {
+          throw new Error("データの取得に失敗しました");
+        }
+        const data: { categories: Category[] } = await res.json();
+        setCategories(data.categories);
+
+      } catch (error) {
+        console.log("カテゴリー取得失敗" , error);
+        alert("カテゴリーの取得失敗しました");
+      }
     };
     fetchCategories();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await fetch(`/api/admin/categories`, {
+        method: "POST",
+        headers: { "Content-Type" : "application/json" },
+        body: JSON.stringify({
+          name
+        }),
+      });
+      alert("新規作成しました");
+      router.push("/admin/categories");
+    } catch (error) {
+      console.log("新規作成失敗", error);
+      alert("新規作成に失敗しました");
+    }
+  };
 
     if (categories.find((category) => category.name === name)) {
       setErrorMessage(
@@ -30,43 +56,17 @@ const CategoryNewPage: React.FC = () => {
       return;
     }
 
-    try {
-      const res = await fetch("/api/admin/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-
-      if (res.ok) {
-        router.push("/admin/categories");
-      } else {
-        alert("投稿に失敗しました");
-      }
-    } catch (error) {
-      console.log("エラー:", error);
-    }
-  };
   return (
     <>
       <div className={styles.main}>
         <h2>カテゴリー作成</h2>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.n_article}>
-            <label>カテゴリー</label>
-            <input
-              type="text"
-              id="category"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-          <div className={styles.n_btn}>
-            <button type="submit" className={styles.put}>
-              作成
-            </button>
-          </div>
-        </form>
+        <PostForm
+        mode="new"
+        name={name}
+        setName={setName}
+        onSubmit={handleSubmit}
+        errorMessage={errorMessage}
+        />
       </div>
     </>
   );

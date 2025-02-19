@@ -3,7 +3,9 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css"
 import { useParams, useRouter } from 'next/navigation';
-//import { Category } from "@/_types/Categories";
+import { PostForm } from "../_components/PostForm";
+
+type Category = { name: string };
 
 const EditCategoryPage = () => {
   const [name, setName] = useState('');
@@ -17,7 +19,7 @@ const EditCategoryPage = () => {
     const fetchPost = async() => {
       try {
         const res = await fetch(`/api/admin/categories/${id}`);
-        const data = await res.json();
+        const data: { category: Category } = await res.json();
         setName(data.category.name);
       } catch ( error ) {
         console.log("カテゴリーの取得失敗", error);
@@ -58,7 +60,7 @@ const EditCategoryPage = () => {
         router.push("/admin/categories");
       } catch ( error ) {
         console.log("削除失敗", error);
-        alert("削除しました")
+        alert("削除失敗しました")
       }
     };
   
@@ -66,17 +68,13 @@ const EditCategoryPage = () => {
     <>
     <div className={styles.main}>
     <h2>カテゴリー編集</h2>
-      <form onSubmit={handleSubmit}>
-      <div className={styles.n_article}>
-        <label>カテゴリー</label>
-        <input type="text" id="categories" value={name} onChange={(e) => setName(e.target.value)}/>
-      </div>
-      <div className={styles.n_btn}>
-        <button type="submit" className={styles.put}>更新</button>
-        <button type="button" className={styles.delete} onClick={handleDelete}>削除</button>
-      </div>
-
-      </form>
+    <PostForm 
+      mode="edit"
+      name={name}
+      setName={setName}
+      onSubmit={handleSubmit}
+      onDelete={handleDelete}
+      />
     </div>
 
 

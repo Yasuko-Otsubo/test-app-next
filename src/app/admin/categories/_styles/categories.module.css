@@ -31,6 +31,8 @@
   padding: 5px;
   color: #fff;
   border-radius: 5px;
+  background-color: #dc2624;
+  border: 1px solid #dc2624;
 }
 .n_btn .put {
   background-color: #5045e5;

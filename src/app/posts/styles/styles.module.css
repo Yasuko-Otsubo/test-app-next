@@ -45,3 +45,6 @@
 .h2 {
   font-weight: 200;
 }
+.content {
+  overflow-wrap: break-word; /* 長い単語を折り返す */
+}

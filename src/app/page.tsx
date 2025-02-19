@@ -5,6 +5,10 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import { MicroCmsPost } from "./_types/MicroCmsPost";
 
+type MicroCmsResponse = {
+  posts: MicroCmsPost[];
+};
+
 // テキストの文字数と改行文字の変換
 const truncateText = (text: string, maxLength: number) => {
   // <br>タグを改行文字に変換
@@ -28,7 +32,7 @@ const Home: React.FC = () => {
           throw new Error("Network response was not ok");
         }
 
-        const data = await res.json();
+        const data: MicroCmsResponse = await res.json();
         console.log("Fetched Data:", data); // データの構造を確認
 
 

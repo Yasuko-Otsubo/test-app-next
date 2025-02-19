@@ -34,6 +34,12 @@ const BlogPage: React.FC = () => {
     return <p className={styles.b_p}>記事がありません</p>;
   }
 
+  const formContent = (content: string) => {
+    return content.split('\n').reduce<React.ReactNode[]>((acc, item, index) => {
+      return acc.concat(item, <br key={index} />);
+    }, [] )
+  };
+
   return (
     <>
       <div className={styles.blogpage}>
@@ -59,7 +65,9 @@ const BlogPage: React.FC = () => {
           </div>
         </div>
         <h2 className={styles.h2}>{post.title}</h2>
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className={styles.content} >
+        {formContent(post.content)}
+        </div>
       </div>
     </>
   );
