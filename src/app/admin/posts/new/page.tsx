@@ -65,6 +65,7 @@ const BlogNewPage: React.FC = () => {
         categories={allCategories}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
+        allCategories={allCategories}
         onSubmit={handleSubmit}
       />
     </div>
