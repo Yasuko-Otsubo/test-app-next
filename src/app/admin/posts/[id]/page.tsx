@@ -18,7 +18,6 @@ interface ApiResponse {
   post: Post;
 }
 
-
 const BlogEditPage: React.FC = () => {
   const { id } = useParams();
   const router = useRouter();
@@ -27,7 +26,7 @@ const BlogEditPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  //const [allCategories, setAllCategories] = useState<Category[]>([]);
 
   // GET
   useEffect(() => {
@@ -49,19 +48,6 @@ const BlogEditPage: React.FC = () => {
     fetchPost();
   }, [id]);
 
-  // カテゴリー 一覧取得
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(`/api/admin/categories`);
-        const data:{ categories : Category[] } = await res.json();
-        setAllCategories(data.categories);
-      } catch (error) {
-        console.log("カテゴリーの取得失敗", error);
-      }
-    };
-    fetchCategories();
-  }, []);
 
   // PUT
   const handleSubmit = async (e: FormEvent) => {
@@ -110,10 +96,9 @@ const BlogEditPage: React.FC = () => {
         setContent={setContent}
         thumbnailUrl={thumbnailUrl}
         setThumbnailUrl={setThumbnailUrl}
-        categories={allCategories}
+        //allCategories={allCategories}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
-        allCategories={allCategories}
         onSubmit={handleSubmit}
         onDelete={handleDelete}
       />

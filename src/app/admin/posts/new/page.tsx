@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, FormEvent } from "react";
 import styles from "../_styles/main.module.css";
 import { useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
-import { Category } from "@/app/_types/Categories";
+//import { Category } from "@/app/_types/Categories";
 
 const BlogNewPage: React.FC = () => {
   const router = useRouter();
@@ -13,21 +13,7 @@ const BlogNewPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
-
-  // カテゴリー 一覧取得
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(`/api/admin/categories`);
-        const data: { categories : Category[]} = await res.json();
-        setAllCategories(data.categories);
-      } catch (error) {
-        console.log("カテゴリーの取得失敗", error);
-      }
-    };
-    fetchCategories();
-  }, []);
+  //const [allCategories, setAllCategories] = useState<Category[]>([]);
 
   // POST
   const handleSubmit = async (e: FormEvent) => {
@@ -62,10 +48,8 @@ const BlogNewPage: React.FC = () => {
         setContent={setContent}
         thumbnailUrl={thumbnailUrl}
         setThumbnailUrl={setThumbnailUrl}
-        categories={allCategories}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
-        allCategories={allCategories}
         onSubmit={handleSubmit}
       />
     </div>

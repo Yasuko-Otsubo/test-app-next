@@ -1,17 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Category } from "@/app/_types/Categories";
 
 interface Props {
   selectCategories: number[];
   setCategories: (categories: number[]) => void;
-  allCategories: Category[];
 }
 
 const SelectCategories: React.FC<Props> = ({
   selectCategories,
-  setCategories,
-  allCategories,
+  setCategories
 }) => {
+
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async() => {
+      try {
+        const res = await fetch(`/api/admin/categories`);
+        const data: { categories : Category[] } = await res.json();
+        setAllCategories(data.categories);
+      } catch (error) {
+        console.log("カテゴリー取得失敗" , error);
+      }
+    };
+    fetchCategories();
+  }, []);
   return (
     <select
       id="category"

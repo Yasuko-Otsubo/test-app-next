@@ -1,5 +1,5 @@
 import styles from "../_styles/main.module.css";
-import { Category } from "@/app/_types/Categories";
+//import { Category } from "@/app/_types/Categories";
 import React from "react";
 import SelectCategories from "./SelectCategories";
 
@@ -12,10 +12,10 @@ interface Props {
   setContent: (content: string) => void;
   thumbnailUrl: string;
   setThumbnailUrl: (thumbnailUrl: string) => void;
-  categories: Category[];
+  //categories: Category[];
   selectCategories: number[]; // 現在選択されているカテゴリーのID
   setSelectCategories: (categories: number[]) => void;
-  allCategories: Category[]; // すべてのカテゴリー
+  //allCategories?: Category[]; // すべてのカテゴリー
   onSubmit: (e: React.FormEvent) => void;
   onDelete?: () => void;
 }
@@ -30,7 +30,6 @@ export const PostForm: React.FC<Props> = ({
   setThumbnailUrl,
   setSelectCategories,
   selectCategories,
-  allCategories,
   onSubmit,
   onDelete,
 }) => {
@@ -67,7 +66,6 @@ export const PostForm: React.FC<Props> = ({
         <SelectCategories
           selectCategories={selectCategories}
           setCategories={setSelectCategories}
-          allCategories={allCategories}
         />
       </div>
       <div className={styles.e_btn}>
