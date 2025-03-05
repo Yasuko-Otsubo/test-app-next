@@ -32,6 +32,12 @@ const CategoryNewPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (categories.find((category) => category.name === name)) {
+      setErrorMessage("このカテゴリー名は重複しています。別の名前を使用してください");
+      return;
+    }
+  
     try {
       await fetch(`/api/admin/categories`, {
         method: "POST",
@@ -46,14 +52,8 @@ const CategoryNewPage: React.FC = () => {
       console.log("新規作成失敗", error);
       alert("新規作成に失敗しました");
     }
-  };
 
-  if (categories.find((category) => category.name === name)) {
-    setErrorMessage(
-      "このカテゴリー名は重複しています。別の名前を使用してください"
-    );
-    return;
-  }
+};
 
   return (
     <>

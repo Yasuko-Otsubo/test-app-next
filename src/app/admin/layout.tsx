@@ -1,21 +1,43 @@
-'use client'
+"use client";
 
-import Sidebar from './_components/Sidebar';
-import styles from './posts/_styles/main.module.css';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouteGuard } from "./_hooks/useRouteGuard";
+import styles from "./posts/_styles/main.module.css";
 
-export default function RootLayout({
+export default function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  useRouteGuard();
+
+  const pathname = usePathname();
+  const isSelected = (href: string) => {
+    return pathname.includes(href);
+  };
   return (
-    <html lang='ja'>
-      <body>
-        <div className={styles.wrapper}>
-          <Sidebar />
-          <div className={styles.main}>{children}</div>
-        </div>
-      </body>
-    </html>
+    <>
+    <div className={styles.wrapper}>
+      {/* サイドバー */}
+      <aside className={styles.aside}>
+        <Link
+          href="/admin/posts"
+          className={isSelected('/admin/posts') ? 'selected' : ''}
+        >
+          記事一覧
+        </Link>
+        <Link
+          href="/admin/categories"
+          className={isSelected('/admin/categories') ? 'selected' : ''}
+        >
+          カテゴリー一覧
+        </Link>
+      </aside>
+
+      {/* メインエリア */}
+      <div className="main">{children}</div>
+      </div>
+    </>
   )
 }

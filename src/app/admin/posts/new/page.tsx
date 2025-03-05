@@ -4,6 +4,7 @@ import React, { useState, FormEvent } from "react";
 import styles from "../_styles/main.module.css";
 import { useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 //import { Category } from "@/app/_types/Categories";
 
 const BlogNewPage: React.FC = () => {
@@ -11,24 +12,38 @@ const BlogNewPage: React.FC = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
   //const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const { token } = useSupabaseSession();
 
   // POST
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await fetch(`/api/admin/posts`, {
+      /* データ構成チェック*/
+      const bodyData = {
+        title,
+        content,
+        thumbnailImageKey,
+        categories: selectCategories.map((id) => ({ id })),
+      };
+      const res = await fetch('/api/admin/posts', {
         method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({
-          title,
-          content,
-          thumbnailUrl,
-          categories: selectCategories.map((id) => ({ id })),
-        }),
+        headers: { "Content-type": "application/json" ,
+          Authorization: token!,
+        },
+        
+        body: JSON.stringify(bodyData),
       });
+      console.log("送信するデータ:", bodyData);
+      //console.log("トークン:", token);
+      const resData = await res.json();
+      console.log("APIレスポンス:", resData);
+      // レスポンスのステータスを確認
+    if (!res.ok) {
+      throw new Error("新規作成に失敗しました"); 
+    }
       alert("新規作成しました");
       router.push("/admin/posts");
     } catch (error) {
@@ -46,8 +61,8 @@ const BlogNewPage: React.FC = () => {
         setTitle={setTitle}
         content={content}
         setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
+        setThumbnailImageKey={setThumbnailImageKey}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
         onSubmit={handleSubmit}
