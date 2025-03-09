@@ -5,9 +5,12 @@ import styles from "../_styles/categories.module.css";
 import { useRouter } from "next/navigation";
 import { Category } from "@/app/_types/Categories";
 import { PostForm } from "../_components/CategoryForm";
+import useToken from "@/app/admin/_hooks/useToken";
+
 
 const CategoryNewPage: React.FC = () => {
   const [name, setName] = useState("");
+  const token = useToken();
   const [categories, setCategories] = useState<Category[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
@@ -41,7 +44,10 @@ const CategoryNewPage: React.FC = () => {
     try {
       await fetch(`/api/admin/categories`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: token!,
+        },
         body: JSON.stringify({
           name,
         }),

@@ -46,7 +46,7 @@ const BlogPage: React.FC = () => {
         <Image
           className={styles.b_img}
           //▲a
-          src={post.thumbnailUrl.startsWith('http') ? post.thumbnailUrl : 'https://placehold.jp/800x400.png'} // URLの形式を確認
+          src={post.thumbnailUrl?.startsWith('http') ? post.thumbnailUrl : 'https://placehold.jp/800x400.png'} // URLの形式を確認
           width={800}
           height={400}
           alt={post.title}

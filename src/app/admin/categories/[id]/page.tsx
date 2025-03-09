@@ -4,6 +4,8 @@ import React, { FormEvent, useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/CategoryForm";
+import useToken from "@/app/admin/_hooks/useToken";
+
 
 type Category = { name: string };
 
@@ -11,13 +13,21 @@ const EditCategoryPage = () => {
   const [name, setName] = useState("");
   const { id } = useParams();
   const router = useRouter();
+  const token = useToken();
+
   console.log("取得したID:", id); // デバッグ用
 
   //GET
   useEffect(() => {
     const fetchPost = async () => {
+      if(!token) return;
       try {
-        const res = await fetch(`/api/admin/categories/${id}`);
+        const res = await fetch(`/api/admin/categories/${id}`, {
+          headers : {
+            Authorization: token!,
+          }
+        });
+        
         const data: { category: Category } = await res.json();
         setName(data.category.name);
       } catch (error) {
@@ -26,7 +36,7 @@ const EditCategoryPage = () => {
       }
     };
     fetchPost();
-  }, [id]);
+  }, [id, token]);
 
   //
 
@@ -36,7 +46,10 @@ const EditCategoryPage = () => {
     try {
       await fetch(`/api/admin/categories/${id}`, {
         method: "PUT",
-        headers: { "Content-type": "application/json" },
+        headers: { 
+          "Content-type": "application/json",
+          Authorization: token!,
+         },
         body: JSON.stringify({
           name,
         }),
@@ -54,6 +67,9 @@ const EditCategoryPage = () => {
     try {
       await fetch(`/api/admin/categories/${id}`, {
         method: "DELETE",
+        headers : {
+          Authorization: token!,
+        }
       });
       alert("削除しました");
       router.push("/admin/categories");

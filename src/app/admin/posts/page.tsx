@@ -4,13 +4,12 @@ import { useState, useEffect } from "react";
 import styles from "./_styles/main.module.css";
 import Link from "next/link";
 import { Post } from "@/app/_types/post";
-import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
-
+import useToken from "@/app/admin/_hooks/useToken";
 
 //GET
 const PostPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const { token } = useSupabaseSession();
+  const token = useToken();
 
   useEffect(() => {
     //console.log("token:", token);

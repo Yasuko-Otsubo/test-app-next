@@ -4,18 +4,19 @@ import React, { useState, FormEvent } from "react";
 import styles from "../_styles/main.module.css";
 import { useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
-import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 //import { Category } from "@/app/_types/Categories";
+import useToken from "@/app/admin/_hooks/useToken";
+
 
 const BlogNewPage: React.FC = () => {
   const router = useRouter();
+  const token = useToken();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [thumbnailImageKey, setThumbnailImageKey] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
   //const [allCategories, setAllCategories] = useState<Category[]>([]);
-  const { token } = useSupabaseSession();
 
   // POST
   const handleSubmit = async (e: FormEvent) => {
@@ -30,7 +31,8 @@ const BlogNewPage: React.FC = () => {
       };
       const res = await fetch('/api/admin/posts', {
         method: "POST",
-        headers: { "Content-type": "application/json" ,
+        headers: { 
+          "Content-type": "application/json" ,
           Authorization: token!,
         },
         

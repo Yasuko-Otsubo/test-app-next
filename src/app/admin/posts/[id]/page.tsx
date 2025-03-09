@@ -5,7 +5,7 @@ import styles from "../_styles/main.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
 import { Category } from "@/app/_types/Categories";
-
+import useToken from "@/app/admin/_hooks/useToken";
 
 interface Post {
   title: string;
@@ -21,22 +21,33 @@ interface ApiResponse {
 const BlogEditPage: React.FC = () => {
   const { id } = useParams();
   const router = useRouter();
+  const token = useToken();
+
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
   //const [allCategories, setAllCategories] = useState<Category[]>([]);
+  
+
 
   // GET
   useEffect(() => {
     const fetchPost = async () => {
+      if(!token) return;
+
       try {
-        const res = await fetch(`/api/admin/posts/${id}`);
+        const res = await fetch(`/api/admin/posts/${id}`,{
+          headers : {
+            Authorization: token!,
+          }
+
+        });
         const data: ApiResponse = await res.json();
         setTitle(data.post.title);
         setContent(data.post.content);
-        setThumbnailUrl(data.post.thumbnailUrl);
+        setThumbnailImageKey(data.post.thumbnailUrl);
         setSelectCategories(
           data.post.postCategories.map((c) => c.category.id)
         );
@@ -52,14 +63,18 @@ const BlogEditPage: React.FC = () => {
   // PUT
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     try {
       await fetch(`/api/admin/posts/${id}`, {
         method: "PUT",
-        headers: { "Content-type": "application/json" },
+        headers: {
+           "Content-type": "application/json",
+           Authorization: token!,
+          },
         body: JSON.stringify({
           title,
           content,
-          thumbnailUrl,
+          thumbnailImageKey,
           categories: selectCategories.map((id) => ({ id })),
         }),
       });
@@ -73,9 +88,13 @@ const BlogEditPage: React.FC = () => {
 
   // DELETE
   const handleDelete = async () => {
+
     try {
       await fetch(`/api/admin/posts/${id}`, {
         method: "DELETE",
+        headers : {
+          Authorization: token!,
+        },
       });
       alert("記事を削除しました");
       router.push("/admin/posts");
@@ -94,8 +113,8 @@ const BlogEditPage: React.FC = () => {
         setTitle={setTitle}
         content={content}
         setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
+        setThumbnailImageKey={setThumbnailImageKey}
         //allCategories={allCategories}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
