@@ -1,15 +1,18 @@
-import { getCurrentUser } from '@/utils/supabase'
+import { supabase } from '@/utils/supabase'
 import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 const prisma = new PrismaClient()
 
 export const GET = async (request: NextRequest) => {
-  const { currentUser, error } = await getCurrentUser(request)
+  const token = request.headers.get('Authorization') ?? ''
 
+	// supabaseに対してtokenを送る
+  const { error } = await supabase.auth.getUser(token)
+
+  // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
   if (error)
     return NextResponse.json({ status: error.message }, { status: 400 })
-
   try {
     const posts = await prisma.post.findMany({
       include: {
@@ -39,8 +42,10 @@ export const GET = async (request: NextRequest) => {
 }
 
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
-export const POST = async (request: NextRequest, context: any) => {
-  const { currentUser, error } = await getCurrentUser(request)
+export const POST = async (request: NextRequest) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+
 
   if (error)
     return NextResponse.json({ status: error.message }, { status: 400 })

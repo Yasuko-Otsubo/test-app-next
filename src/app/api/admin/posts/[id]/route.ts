@@ -1,12 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { supabase } from '@/utils/supabase';
 
 const prisma = new PrismaClient()
 
-export const GET = async (
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) => {
+const authenticate =  async ( request: NextRequest) => {
+  const token = request.headers.get('Authorization') ?? '';
+
+    // supabaseに対してtokenを送る
+  const { error } = await supabase.auth.getUser(token);
+  // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
+  if (error) {
+    return NextResponse.json({ status: error.message }, { status: 400 });
+  }
+  return null; // 認証成功時はnullを返す
+};
+
+export const GET = async (request: NextRequest, 
+  { params }: { params: { id: string } }) => {
+  const authError = await authenticate(request);
+
+  if (authError) return authError;
+
   const { id } = params
 
   try {
@@ -40,19 +55,19 @@ interface UpdatePostRequestBody {
   title: string
   content: string
   categories: { id: number }[]
-  thumbnailUrl: string
+  thumbnailImageKey: string
 }
 
 // PUTという命名にすることで、PUTリクエストの時にこの関数が呼ばれる
-export const PUT = async (
-  request: NextRequest,
-  { params }: { params: { id: string } }, // ここでリクエストパラメータを受け取る
-) => {
+export const PUT = async (request: NextRequest, { params }: { params: { id: string } }) => {
+  const authError = await authenticate(request);
+  if (authError) return authError;
+
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
   // リクエストのbodyを取得
-  const { title, content, categories, thumbnailUrl }: UpdatePostRequestBody = await request.json()
+  const { title, content, categories, thumbnailImageKey }: UpdatePostRequestBody = await request.json()
 
   try {
     // idを指定して、Postを更新
@@ -63,7 +78,7 @@ export const PUT = async (
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     })
 
@@ -94,10 +109,9 @@ export const PUT = async (
 }
 
 // DELETEという命名にすることで、DELETEリクエストの時にこの関数が呼ばれる
-export const DELETE = async (
-  request: NextRequest,
-  { params }: { params: { id: string } }, // ここでリクエストパラメータを受け取る
-) => {
+export const DELETE = async (request: NextRequest, { params }: { params: { id: string } }) => {
+  const authError = await authenticate(request);
+  if (authError) return authError;
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
@@ -110,9 +124,8 @@ export const DELETE = async (
     })
 
     // レスポンスを返す
-    return NextResponse.json({ status: 'OK' }, { status: 200 })
+    return NextResponse.json({ status: 'OK' }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error)
-      return NextResponse.json({ status: error.message }, { status: 400 })
+    return NextResponse.json({ status: error instanceof Error ? error.message : 'Unknown error' }, { status: 400 });
   }
-}
+};
