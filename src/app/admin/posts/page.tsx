@@ -19,14 +19,19 @@ const PostPage = () => {
       try {
       const res = await fetch("/api/admin/posts",{
         headers: {
-          "Content-Type": "application/json",
           Authorization: token,
         },
     });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTPエラー! ステータス: ${res.status}, 内容: ${errorText}`);
+    }
       const { posts } = await res.json();
       setPosts([...posts]);
     } catch (error) {
       console.error("APIエラー:", error);
+
     }
   };
 

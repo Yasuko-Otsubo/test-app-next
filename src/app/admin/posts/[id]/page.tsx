@@ -10,7 +10,7 @@ import useToken from "@/app/admin/_hooks/useToken";
 interface Post {
   title: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: { category: Category }[];
 }
 
@@ -40,14 +40,14 @@ const BlogEditPage: React.FC = () => {
       try {
         const res = await fetch(`/api/admin/posts/${id}`,{
           headers : {
-            Authorization: token!,
+            Authorization: token,
           }
 
         });
         const data: ApiResponse = await res.json();
         setTitle(data.post.title);
         setContent(data.post.content);
-        setThumbnailImageKey(data.post.thumbnailUrl);
+        setThumbnailImageKey(data.post.thumbnailImageKey);
         setSelectCategories(
           data.post.postCategories.map((c) => c.category.id)
         );
@@ -57,7 +57,7 @@ const BlogEditPage: React.FC = () => {
       }
     };
     fetchPost();
-  }, [id]);
+  }, [id,token]);
 
 
   // PUT
