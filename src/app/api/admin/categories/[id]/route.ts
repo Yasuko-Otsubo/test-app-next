@@ -1,16 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { /*Category,*/  PrismaClient } from '@prisma/client'
+import { supabase } from '@/utils/supabase';
 
 //Prismaクライアントの初期化 データベース操作を行う
 const prisma = new PrismaClient()
+
+const authenticate = async ( request: NextRequest ) => {
+  const token = request.headers.get('Authorization') ?? '';
+
+const { error } = await supabase.auth.getUser(token);
+if(error) {
+  return NextResponse.json({ status: error.message }, { status : 400} );
+}
+return null; 
+};
 
 export const GET = async (
   //Next.jsのリクエストオブジェクト
   request: NextRequest,
   //URLパラメータをオブジェクトとして受け取るための構文
   //`params`オブジェクトから`id`というキーを持つ値を取り出して
-  { params }: { params: { id: string } },
-) => {
+  { params }: { params: { id: string } }) => {
+    const authError = await authenticate(request);
+
+    if(authError) return authError;
+
   const { id } = params
 
   try {
@@ -20,7 +34,9 @@ export const GET = async (
         id: parseInt(id),
       },
     })
-
+    if (!category) {
+      return NextResponse.json({ status: 'Not Found' }, { status: 404 });
+    }
     //Next.jsの`NextResponse`オブジェクトを使用して、JSON形式のレスポンスを生成
     //{ status: 'OK', category }: レスポンスボディとして、ステータスと取得したカテゴリー情報
     //{ status: 200 }: HTTPステータスコード200（成功）を指定
@@ -38,8 +54,11 @@ interface UpdateCategoryRequestBody {
 
 export const PUT = async (
   request: NextRequest,
-  { params }: { params: { id: string } }, // ここでリクエストパラメータを受け取る
+  { params }: { params: { id: string } } // ここでリクエストパラメータを受け取る
 ) => {
+  const authError = await authenticate(request);
+  if(authError) return authError;
+
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
@@ -68,8 +87,11 @@ export const PUT = async (
 
 export const DELETE = async (
   request: NextRequest,
-  { params }: { params: { id: string } }, // ここでリクエストパラメータを受け取る
+  { params }: { params: { id: string } } // ここでリクエストパラメータを受け取る
 ) => {
+
+  const authError = await authenticate(request);
+  if(authError) return authError;
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
@@ -85,7 +107,7 @@ export const DELETE = async (
     return NextResponse.json({ status: 'OK' }, { status: 200 })
   } catch (error) {
     if (error instanceof Error)
-      return NextResponse.json({ status: error.message }, { status: 400 })
+      return NextResponse.json({ status: error instanceof Error ? error.message : 'Unknown error' }, { status: 400 });
   }
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Category } from "@/app/_types/Categories";
+import useToken from "../../_hooks/useToken";
 
 interface Props {
   selectCategories: number[];
@@ -12,11 +13,19 @@ const SelectCategories: React.FC<Props> = ({
 }) => {
 
   const [allCategories, setAllCategories] = useState<Category[]>([]);
-
+  const token = useToken();
+  
   useEffect(() => {
     const fetchCategories = async() => {
+      if(!token) return;
+
       try {
-        const res = await fetch(`/api/admin/categories`);
+        const res = await fetch(`/api/admin/categories`,{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          }
+        });
         const data: { categories : Category[] } = await res.json();
         setAllCategories(data.categories);
       } catch (error) {
@@ -24,7 +33,7 @@ const SelectCategories: React.FC<Props> = ({
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
   return (
     <select
       id="category"
@@ -38,7 +47,7 @@ const SelectCategories: React.FC<Props> = ({
       }
       multiple
     >
-      {allCategories.map((cat) => (
+      {allCategories?.map((cat) => (
         <option key={cat.id} value={cat.id}>
           {cat.name}
         </option>

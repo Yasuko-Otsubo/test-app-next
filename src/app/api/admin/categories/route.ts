@@ -1,10 +1,17 @@
+import { supabase } from '@/utils/supabase'
 import { PrismaClient } from '@prisma/client'
-import { /*NextRequest, */ NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 //Prismaクライアントの初期化 データベース操作を行う
 const prisma = new PrismaClient()
 
-export const GET = async ( /*request: NextRequest*/ ) => {
+export const GET = async ( request: NextRequest ) => {
+
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     // カテゴリーの一覧をDBから取得
     //prisma.category.findMany()を使って、カテゴリーをデータベースから取得
@@ -28,7 +35,12 @@ interface CreateCategoryRequestBody {
   name: string
 }
 
-export const POST = async (request: Request /*, context: any*/ ) => {
+export const POST = async (request: Request /*, context: any*/) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({ status: error.message }, { status: 400 })
+
   try {
     // リクエストのbodyを取得
     //リクエストのボディをJSONとしてパース

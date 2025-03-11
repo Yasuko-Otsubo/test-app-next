@@ -4,20 +4,30 @@ import React, { useEffect, useState } from "react";
 import styles from "./_styles/categories.module.css";
 import Link from "next/link";
 import { Category } from "@/app/_types/Categories";
+import useToken from "../_hooks/useToken";
 
 //GET
 const CategoryNewPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const token = useToken();
 
   useEffect(() => {
+    if (!token) return;
+
     const fetcher = async () => {
-      const res = await fetch("/api/admin/categories");
+      const res = await fetch("/api/admin/categories",{
+        headers: {
+        Authorization: token,
+
+        },
+      }
+      );
       const { categories } = await res.json();
       setCategories(categories);
     };
 
     fetcher();
-  }, []);
+  }, [token]);
 
   return (
     <>
@@ -28,7 +38,8 @@ const CategoryNewPage: React.FC = () => {
             <div className={styles.new}>新規作成</div>
           </Link>
         </div>
-        {categories.map((category) => (
+        {categories.map((category) => {
+          return (
           <h4 key={category.id} className={styles.h4}>
             <Link
               href={`/admin/categories/${category.id}`}
@@ -37,7 +48,9 @@ const CategoryNewPage: React.FC = () => {
               {category.name}
             </Link>
           </h4>
-        ))}
+
+          )
+})}
       </div>
     </>
   );

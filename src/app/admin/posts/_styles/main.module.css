@@ -1,11 +1,45 @@
 /* layout */
 
 .wrapper {
-  display: flex;
-  justify-content: space-between;
-  height: 100vh;
-  
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;  
 }
+/***** 11章 *****/
+.aside {
+  position: absolute;
+  background-color: #f3f4f6; /* bg-gray-100 */
+  width: 20%;
+  height: 100vh;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.aside a {
+  padding: 16px 16px 16px 25px; /* p-4 */
+  display: block;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  color: #333;
+}
+
+.aside a:hover {
+  background-color: #ebf8ff; /* hover:bg-blue-100 */
+}
+
+.aside a.selected {
+  background-color: #ebf8ff; /* bg-blue-100 */
+}
+.main , .n_main{
+  width: 75%;
+  margin-left: 20%;
+  padding: 20px;
+}
+
 
 /* main */
 .m_list {
@@ -47,10 +81,6 @@
   text-decoration: none;
 }
 /* new */
-.main, .n_main {
-  width: 95%;
-  margin: 0 auto;
-}
 .n_article {
   width: 100%;
   padding: 10px 0;
@@ -95,3 +125,4 @@
 .e_btn .put, .e_btn .delete, .link {
   cursor: pointer;
 }
+

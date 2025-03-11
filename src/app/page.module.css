@@ -1,5 +1,4 @@
 .h_main {
-  
   margin: 30px 0;
 }
 
@@ -7,7 +6,7 @@
   width: 800px;
   padding: 20px;
   margin: 0 auto 30px;
-  border: 1px solid  #ccc;
+  border: 1px solid #ccc;
   cursor: pointer;
 }
 
@@ -15,7 +14,8 @@
   text-decoration: none;
 }
 
-.h_sec_upper , .h_category {
+.h_sec_upper,
+.h_category {
   display: flex;
   justify-content: space-between;
 }
@@ -24,7 +24,7 @@
   color: gray;
 }
 
-.h_cate_area{
+.h_cate_area {
   padding: 5px;
   margin: 0 5px;
   font-size: 12px;
@@ -32,17 +32,83 @@
   border-radius: 5px;
 }
 
-.h2, .h_p {
+.h2,
+.h_p {
   color: #000;
   font-weight: 200;
 }
 
 .h_loading {
   text-align: center;
-  margin-top: 150px ;
+  margin-top: 150px;
 }
 
 .h_p {
   white-space: pre-wrap; /* 改行文字を有効化 */
   word-wrap: break-word; /* 長い単語で折り返し */
 }
+
+/***** signup *****/
+/***** login *****/
+
+.signUp {
+  display: flex;
+  justify-content: center;
+  padding-top: 200px;
+}
+.S_form {
+  margin-bottom: 1rem;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+.S_label {
+  display: block;
+  margin-bottom: 10px;
+  color: #111827;
+}
+.S_input {
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #111827;
+  border-radius: 5px;
+  display: block;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.S_input:focus {
+  /*ring: 0; */
+  outline: none;
+  border-color: #3b82f6;
+}
+.S_list {
+  max-width: 400px;
+  margin-bottom: 10px;
+}
+.S_btn {
+  color: #fff;
+  background-color: #1d4ed8;
+  border: 1px solid #1d4ed8;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+.S_btn:hover {
+  background-color: #1e40af;
+}
+.S_btn:focus {
+  outline: none; /* focus:outline-none: フォーカス時のアウトラインを無効にする */
+  ring: 0; /* フォーカス時のリングを無効にする */
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5); /* focus:ring-4 focus:ring-blue-300: フォーカス時の青のリング効果を追加 */
+}
+.S_btn,
+.S_input,
+.S_label {
+  font-size: 14px;
+  font-weight: 500;
+}
+.S_form, .S_btn, .S_input {
+  width: 100%;
+}
+

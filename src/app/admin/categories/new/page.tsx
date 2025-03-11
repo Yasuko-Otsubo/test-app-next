@@ -5,18 +5,25 @@ import styles from "../_styles/categories.module.css";
 import { useRouter } from "next/navigation";
 import { Category } from "@/app/_types/Categories";
 import { PostForm } from "../_components/CategoryForm";
+import useToken from "@/app/admin/_hooks/useToken";
+
 
 const CategoryNewPage: React.FC = () => {
   const [name, setName] = useState("");
+  const token = useToken();
   const [categories, setCategories] = useState<Category[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     const fetchCategories = async () => {
+      if(!token) return;
       try {
-        const res = await fetch("/api/admin/categories");
-
+        const res = await fetch("/api/admin/categories",{
+          headers: {
+            Authorization: token,
+          },
+        });
         if (!res.ok) {
           throw new Error("データの取得に失敗しました");
         }
@@ -28,14 +35,23 @@ const CategoryNewPage: React.FC = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (categories.find((category) => category.name === name)) {
+      setErrorMessage("このカテゴリー名は重複しています。別の名前を使用してください");
+      return;
+    }
+  
     try {
       await fetch(`/api/admin/categories`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: token!,
+        },
         body: JSON.stringify({
           name,
         }),
@@ -46,14 +62,8 @@ const CategoryNewPage: React.FC = () => {
       console.log("新規作成失敗", error);
       alert("新規作成に失敗しました");
     }
-  };
 
-  if (categories.find((category) => category.name === name)) {
-    setErrorMessage(
-      "このカテゴリー名は重複しています。別の名前を使用してください"
-    );
-    return;
-  }
+};
 
   return (
     <>

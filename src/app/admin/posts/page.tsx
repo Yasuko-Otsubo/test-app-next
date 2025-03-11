@@ -4,20 +4,39 @@ import { useState, useEffect } from "react";
 import styles from "./_styles/main.module.css";
 import Link from "next/link";
 import { Post } from "@/app/_types/post";
+import useToken from "@/app/admin/_hooks/useToken";
 
 //GET
 const PostPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const token = useToken();
 
   useEffect(() => {
-    const fetchPost = async () => {
-      const res = await fetch("/api/posts");
-      const { posts } = await res.json();
-      setPosts(posts);
-    };
+    //console.log("token:", token);
+    if (!token) return;
 
-    fetchPost();
-  }, []);
+    const fetchPost = async () => {
+      try {
+      const res = await fetch("/api/admin/posts",{
+        headers: {
+          Authorization: token,
+        },
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTPエラー! ステータス: ${res.status}, 内容: ${errorText}`);
+    }
+      const { posts } = await res.json();
+      setPosts([...posts]);
+    } catch (error) {
+      console.error("APIエラー:", error);
+
+    }
+  };
+
+  fetchPost();
+}, [token]);
 
   return (
     <div className={styles.main}>
