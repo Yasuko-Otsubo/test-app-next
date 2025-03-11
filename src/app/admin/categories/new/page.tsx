@@ -17,9 +17,13 @@ const CategoryNewPage: React.FC = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
+      if(!token) return;
       try {
-        const res = await fetch("/api/admin/categories");
-
+        const res = await fetch("/api/admin/categories",{
+          headers: {
+            Authorization: token,
+          },
+        });
         if (!res.ok) {
           throw new Error("データの取得に失敗しました");
         }
@@ -31,7 +35,7 @@ const CategoryNewPage: React.FC = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

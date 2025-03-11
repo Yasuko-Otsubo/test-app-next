@@ -4,20 +4,30 @@ import React, { useEffect, useState } from "react";
 import styles from "./_styles/categories.module.css";
 import Link from "next/link";
 import { Category } from "@/app/_types/Categories";
+import useToken from "../_hooks/useToken";
 
 //GET
 const CategoryNewPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const token = useToken();
 
   useEffect(() => {
+    if (!token) return;
+
     const fetcher = async () => {
-      const res = await fetch("/api/admin/categories");
+      const res = await fetch("/api/admin/categories",{
+        headers: {
+        Authorization: token,
+
+        },
+      }
+      );
       const { categories } = await res.json();
       setCategories(categories);
     };
 
     fetcher();
-  }, []);
+  }, [token]);
 
   return (
     <>
