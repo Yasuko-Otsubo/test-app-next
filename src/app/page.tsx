@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import { MicroCmsPost } from "./_types/MicroCmsPost";
 
+
 type MicroCmsResponse = {
   posts: MicroCmsPost[];
 };

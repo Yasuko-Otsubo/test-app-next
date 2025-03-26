@@ -1,4 +1,5 @@
 import Headers from "./admin/_components/Header";
+import './_styles/globals.css';
 
 export const metadata = {
   title: "Next.js",
@@ -19,4 +20,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
