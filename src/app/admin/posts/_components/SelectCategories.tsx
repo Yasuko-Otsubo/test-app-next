@@ -38,7 +38,7 @@ const SelectCategories: React.FC<Props> = ({
       }
       multiple
     >
-      {allCategories.map((cat) => (
+      {allCategories?.map((cat) => (
         <option key={cat.id} value={cat.id}>
           {cat.name}
         </option>

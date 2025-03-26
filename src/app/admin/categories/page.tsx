@@ -28,7 +28,7 @@ const CategoryNewPage: React.FC = () => {
             <div className={styles.new}>新規作成</div>
           </Link>
         </div>
-        {categories.map((category) => (
+        {categories?.map((category) => (
           <h4 key={category.id} className={styles.h4}>
             <Link
               href={`/admin/categories/${category.id}`}

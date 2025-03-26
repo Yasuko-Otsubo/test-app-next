@@ -13,7 +13,7 @@ const PostPage = () => {
     const fetchPost = async () => {
       const res = await fetch("/api/posts");
       const { posts } = await res.json();
-      setPosts(posts);
+      setPosts(posts || []);
     };
 
     fetchPost();
