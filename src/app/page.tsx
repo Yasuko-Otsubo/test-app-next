@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./page.module.css";
+import styles from "./_styles/page.module.css";
 import Link from "next/link";
 import { MicroCmsPost } from "./_types/MicroCmsPost";
 
