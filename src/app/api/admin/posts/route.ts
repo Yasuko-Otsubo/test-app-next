@@ -41,7 +41,7 @@ interface CreatePostRequestBody {
   title: string;
   content: string;
   categories: { id: number }[];
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
 }
 
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
@@ -56,7 +56,7 @@ export const POST = async (request: NextRequest /*, context: any*/) => {
     const body = await request.json();
 
     // bodyの中からtitle, content, categories, thumbnailUrlを取り出す
-    const { title, content, categories, thumbnailUrl }: CreatePostRequestBody =
+    const { title, content, categories, thumbnailImageKey }: CreatePostRequestBody =
       body;
 
     // 投稿をDBに生成
@@ -64,7 +64,7 @@ export const POST = async (request: NextRequest /*, context: any*/) => {
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     });
 

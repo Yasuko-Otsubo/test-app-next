@@ -25,7 +25,7 @@ const BlogEditPage: React.FC = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
   const { token } = useSupabaseSession();
 
@@ -45,7 +45,7 @@ const BlogEditPage: React.FC = () => {
         const data: ApiResponse = await res.json();
         setTitle(data.post.title);
         setContent(data.post.content);
-        setThumbnailUrl(data.post.thumbnailUrl);
+        setThumbnailImageKey(data.post.thumbnailUrl);
         setSelectCategories(
           data.post.postCategories.map((c) => c.category.id)
         );
@@ -72,7 +72,7 @@ const BlogEditPage: React.FC = () => {
         body: JSON.stringify({
           title,
           content,
-          thumbnailUrl,
+          thumbnailImageKey,
           categories: selectCategories.map((id) => ({ id })),
         }),
       });
@@ -111,8 +111,8 @@ const BlogEditPage: React.FC = () => {
         setTitle={setTitle}
         content={content}
         setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
+        setThumbnailImageKey={setThumbnailImageKey}
         //allCategories={allCategories}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}

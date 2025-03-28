@@ -12,7 +12,7 @@ const BlogNewPage: React.FC = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
 
   // POST
@@ -31,7 +31,7 @@ const BlogNewPage: React.FC = () => {
         body: JSON.stringify({
           title,
           content,
-          thumbnailUrl,
+          thumbnailImageKey,
           categories: selectCategories.map((id) => ({ id })),
         }),
       });
@@ -52,8 +52,8 @@ const BlogNewPage: React.FC = () => {
         setTitle={setTitle}
         content={content}
         setContent={setContent}
-        thumbnailUrl={thumbnailUrl}
-        setThumbnailUrl={setThumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
+        setThumbnailImageKey={setThumbnailImageKey}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
         onSubmit={handleSubmit}

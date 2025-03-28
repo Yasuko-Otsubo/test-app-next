@@ -12,32 +12,31 @@ const PostPage = () => {
   const { token } = useSupabaseSession();
 
   useEffect(() => {
+    //console.log("token:", token);
     if (!token) return;
 
-    const fetcher = async () => {
-      const res = await fetch("/api/admin/posts", {
+    const fetchPost = async () => {
+      try {
+      const res = await fetch("/api/admin/posts",{
         headers: {
-          "Content-Type": "application/json",
           Authorization: token,
         },
-      });
+    });
 
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTPエラー! ステータス: ${res.status}, 内容: ${errorText}`);
+    }
       const { posts } = await res.json();
       setPosts([...posts]);
-    };
-    fetcher();
-  }, [token]);
+    } catch (error) {
+      console.error("APIエラー:", error);
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      const res = await fetch("/api/posts");
-      const { posts } = await res.json();
-      setPosts(posts || []);
-    };
+    }
+  };
 
-    fetchPost();
-  }, []);
-
+  fetchPost();
+}, [token]);
   return (
     <div className={styles.main}>
       <div className={styles.upper}>

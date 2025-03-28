@@ -42,12 +42,14 @@ export const GET = async (
 }
 
 // 記事の更新時に送られてくるリクエストのbodyの型
+/*
 interface UpdatePostRequestBody {
   title: string
   content: string
   categories: { id: number }[]
   thumbnailUrl: string
 }
+*/
 
 // PUTという命名にすることで、PUTリクエストの時にこの関数が呼ばれる
 export const PUT = async (
@@ -63,7 +65,7 @@ export const PUT = async (
     return NextResponse.json({status: error.message}, {status: 400})
 
   // リクエストのbodyを取得
-  const { title, content, categories, thumbnailUrl }: UpdatePostRequestBody = await request.json()
+  const { title, content, categories, thumbnailImageKey } = await request.json()
 
   try {
     // idを指定して、Postを更新
@@ -74,7 +76,7 @@ export const PUT = async (
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     })
 

@@ -1,7 +1,9 @@
 import styles from "../_styles/main.module.css";
 //import { Category } from "@/app/_types/Categories";
-import React from "react";
+import React, { ChangeEvent/*, useState*/ } from "react";
 import SelectCategories from "./SelectCategories";
+import { supabase } from "@/utils/supabase";
+import { v4 as uuidv4 } from 'uuid';
 
 //Propsを定義
 interface Props {
@@ -10,8 +12,8 @@ interface Props {
   setTitle: (title: string) => void;
   content: string;
   setContent: (content: string) => void;
-  thumbnailUrl: string;
-  setThumbnailUrl: (thumbnailUrl: string) => void;
+  thumbnailImageKey: string;
+  setThumbnailImageKey: (thumbnailImageKey: string) => void;
   //categories: Category[];
   selectCategories: number[]; // 現在選択されているカテゴリーのID
   setSelectCategories: (categories: number[]) => void;
@@ -26,13 +28,39 @@ export const PostForm: React.FC<Props> = ({
   setTitle,
   content,
   setContent,
-  thumbnailUrl,
-  setThumbnailUrl,
+  thumbnailImageKey,
+  setThumbnailImageKey,
   setSelectCategories,
   selectCategories,
   onSubmit,
   onDelete,
 }) => {
+
+  //const [thumbnailImageKey, setThumbnailImageKey] = useState('');
+  const handleImageChange = async(
+    event: ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    if(!event.target.files || event.target.files.length == 0) {
+      return 
+    }
+
+    const file = event.target.files[0] //選択された画像
+    const filePath = `private/${uuidv4()}`//uuidというのは、固有のIDを生成するためのライブラリ
+
+    const { data, error } = await supabase.storage
+    .from('post-thumbnail')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+
+    //アップロードに失敗したらエラーを表示して終了
+    if(error) {
+      alert(error.message)
+      return
+    }
+    setThumbnailImageKey(data.path)
+  }
   return (
     <form onSubmit={onSubmit}>
       <div className={styles.n_article}>
@@ -53,12 +81,12 @@ export const PostForm: React.FC<Props> = ({
         />
       </div>
       <div className={styles.n_article}>
-        <label>サムネイルURL</label>
+        <label htmlFor="thumbnailImageKey">サムネイルURL</label>
         <input
-          type="text"
-          id="thumbnailUrl"
-          value={thumbnailUrl}
-          onChange={(e) => setThumbnailUrl(e.target.value)}
+          type="file"
+          id="thumbnailImageKey"
+          value={thumbnailImageKey}
+          onChange={handleImageChange}　accept="image/*"
         />
       </div>
       <div className={styles.n_article}>
