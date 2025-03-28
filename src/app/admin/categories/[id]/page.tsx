@@ -4,6 +4,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/CategoryForm";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 type Category = { name: string };
 
@@ -12,12 +13,20 @@ const EditCategoryPage = () => {
   const { id } = useParams();
   const router = useRouter();
   console.log("取得したID:", id); // デバッグ用
+  const { token } = useSupabaseSession();
 
   //GET
   useEffect(() => {
+    if(!token) return;
+
     const fetchPost = async () => {
       try {
-        const res = await fetch(`/api/admin/categories/${id}`);
+        const res = await fetch(`/api/admin/categories/${id}`,{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
         const data: { category: Category } = await res.json();
         setName(data.category.name);
       } catch (error) {
@@ -26,17 +35,21 @@ const EditCategoryPage = () => {
       }
     };
     fetchPost();
-  }, [id]);
+  }, [id, token]);
 
   //
 
   //PUT
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if(!token) return;
     try {
       await fetch(`/api/admin/categories/${id}`, {
         method: "PUT",
-        headers: { "Content-type": "application/json" },
+        headers: {
+           "Content-type": "application/json",
+          Authorization: token,
+         },
         body: JSON.stringify({
           name,
         }),
@@ -51,9 +64,13 @@ const EditCategoryPage = () => {
 
   //DELETE
   const handleDelete = async () => {
+    if(!token) return;
     try {
       await fetch(`/api/admin/categories/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: token,
+        }
       });
       alert("削除しました");
       router.push("/admin/categories");

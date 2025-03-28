@@ -5,17 +5,26 @@ import styles from "../_styles/categories.module.css";
 import { useRouter } from "next/navigation";
 import { Category } from "@/app/_types/Categories";
 import { PostForm } from "../_components/CategoryForm";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 const CategoryNewPage: React.FC = () => {
   const [name, setName] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const { token } = useSupabaseSession();
 
   useEffect(() => {
+    if(!token) return;
+
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/admin/categories");
+        const res = await fetch("/api/admin/categories",{
+          headers : {
+            "Content-type" : "application/json",
+            Authorization: token,
+          },
+        });
 
         if (!res.ok) {
           throw new Error("データの取得に失敗しました");
@@ -28,14 +37,19 @@ const CategoryNewPage: React.FC = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if(!token) return;
     try {
       await fetch(`/api/admin/categories`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: token,
+       },
         body: JSON.stringify({
           name,
         }),

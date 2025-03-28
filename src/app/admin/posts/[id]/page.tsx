@@ -5,6 +5,7 @@ import styles from "../_styles/main.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
 import { Category } from "@/app/_types/Categories";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 
 interface Post {
@@ -26,13 +27,21 @@ const BlogEditPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
-  //const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const { token } = useSupabaseSession();
 
   // GET
   useEffect(() => {
+    if(!token) return;
+
     const fetchPost = async () => {
       try {
-        const res = await fetch(`/api/admin/posts/${id}`);
+        const res = await fetch(`/api/admin/posts/${id}`,{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        }
+        );
         const data: ApiResponse = await res.json();
         setTitle(data.post.title);
         setContent(data.post.content);
@@ -46,16 +55,20 @@ const BlogEditPage: React.FC = () => {
       }
     };
     fetchPost();
-  }, [id]);
+  }, [id, token]);
 
 
   // PUT
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if(!token) return; 
     try {
       await fetch(`/api/admin/posts/${id}`, {
         method: "PUT",
-        headers: { "Content-type": "application/json" },
+        headers: { 
+          "Content-type": "application/json",
+          Authorization: token,
+         },
         body: JSON.stringify({
           title,
           content,
@@ -73,9 +86,13 @@ const BlogEditPage: React.FC = () => {
 
   // DELETE
   const handleDelete = async () => {
+    if(!token) return;
     try {
       await fetch(`/api/admin/posts/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: token,
+        }
       });
       alert("記事を削除しました");
       router.push("/admin/posts");
