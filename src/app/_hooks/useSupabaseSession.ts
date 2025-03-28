@@ -16,7 +16,18 @@ export const useSupabaseSession = () => {
       setToken(session?.access_token || null)
       setIsLoading(false)
     }
-    fetcher()
+    fetcher();
+
+    //ログイン状態の監視
+    //onAuthStateChange() は Supabase の 認証状態（ログイン・ログアウト）の変更を監視 する関数
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setToken(session?.access_token || null);
+    });
+    return () => {
+      //監視を解除する
+      authListener.subscription.unsubscribe();
+    }
   }, [])
   return {session, isLoading, token}
 }
