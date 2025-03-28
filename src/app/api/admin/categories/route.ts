@@ -1,5 +1,6 @@
+import { supabase } from '@/utils/supabase';
 import { PrismaClient } from '@prisma/client'
-import { /*NextRequest,*/ NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 const prisma = new PrismaClient({
   datasources: {
@@ -8,7 +9,12 @@ const prisma = new PrismaClient({
     },
   },
 });
-export const GET = async (/*request: NextRequest*/) => {
+export const GET = async (request: NextRequest) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token);
+
+  if(error)
+    return NextResponse.json({ status: error.message}, { status: 400})
   try {
     // カテゴリーの一覧をDBから取得
     const categories = await prisma.category.findMany({
@@ -29,6 +35,12 @@ export const GET = async (/*request: NextRequest*/) => {
 }
 
 export const POST = async (request: Request/*, context: any*/) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token);
+
+  if(error)
+    return NextResponse.json({ status: error.message}, { status: 400})
+
   try {
     // リクエストのbodyを取得
     const body = await request.json()
