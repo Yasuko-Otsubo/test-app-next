@@ -19,6 +19,7 @@ const PostPage = () => {
       try {
       const res = await fetch("/api/admin/posts",{
         headers: {
+          "Content-Type": "application/json",
           Authorization: token,
         },
     });
@@ -28,6 +29,7 @@ const PostPage = () => {
       throw new Error(`HTTPエラー! ステータス: ${res.status}, 内容: ${errorText}`);
     }
       const { posts } = await res.json();
+      console.log("APIから取得した記事一覧:", posts);
       setPosts([...posts]);
     } catch (error) {
       console.error("APIエラー:", error);
@@ -40,7 +42,7 @@ const PostPage = () => {
   return (
     <div className={styles.main}>
       <div className={styles.upper}>
-        <h2>記事一覧</h2>
+        <h2 className={styles.h2}>記事一覧</h2>
         <Link href={`/admin/posts/new`} className={styles.link}>
           <div className={styles.new}>新規作成</div>
         </Link>

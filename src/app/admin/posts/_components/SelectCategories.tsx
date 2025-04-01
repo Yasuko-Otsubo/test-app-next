@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Category } from "@/app/_types/Categories";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 interface Props {
   selectCategories: number[];
@@ -12,11 +13,18 @@ const SelectCategories: React.FC<Props> = ({
 }) => {
 
   const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const { token } = useSupabaseSession();
 
   useEffect(() => {
+    if(!token) return;
     const fetchCategories = async() => {
       try {
-        const res = await fetch(`/api/admin/categories`);
+        const res = await fetch('/api/admin/categories',{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
         const data: { categories : Category[] } = await res.json();
         setAllCategories(data.categories);
       } catch (error) {
@@ -24,7 +32,7 @@ const SelectCategories: React.FC<Props> = ({
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
   return (
     <select
       id="category"

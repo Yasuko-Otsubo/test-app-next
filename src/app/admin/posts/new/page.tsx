@@ -45,7 +45,7 @@ const BlogNewPage: React.FC = () => {
 
   return (
     <div className={styles.n_main}>
-      <h2>新規作成</h2>
+      <h2 className={styles.h2}>新規作成</h2>
       <PostForm
         mode="new"
         title={title}

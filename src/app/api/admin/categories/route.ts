@@ -12,6 +12,9 @@ const prisma = new PrismaClient({
 export const GET = async (request: NextRequest) => {
   const token = request.headers.get('Authorization') ?? ''
   const { error } = await supabase.auth.getUser(token);
+  if (!token) {
+    return NextResponse.json({ status: 'Unauthorized' }, { status: 401 });
+  }
 
   if(error)
     return NextResponse.json({ status: error.message}, { status: 400})

@@ -72,7 +72,7 @@ const CategoryNewPage: React.FC = () => {
   return (
     <>
       <div className={styles.main}>
-        <h2>カテゴリー作成</h2>
+        <h2 className={styles.h2}>カテゴリー作成</h2>
         <PostForm
           mode="new"
           name={name}

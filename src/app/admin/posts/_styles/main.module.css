@@ -95,3 +95,7 @@
 .e_btn .put, .e_btn .delete, .link {
   cursor: pointer;
 }
+.h2{
+  font-weight: 600;
+  padding: 15px 0;
+}

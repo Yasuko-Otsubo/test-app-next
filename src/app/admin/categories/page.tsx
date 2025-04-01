@@ -33,7 +33,7 @@ const CategoryNewPage: React.FC = () => {
     <>
       <div className={styles.main}>
         <div className={styles.upper}>
-          <h2>カテゴリー 一覧</h2>
+          <h2 className={styles.h2}>カテゴリー 一覧</h2>
           <Link href={`/admin/categories/new`} className={styles.link}>
             <div className={styles.new}>新規作成</div>
           </Link>

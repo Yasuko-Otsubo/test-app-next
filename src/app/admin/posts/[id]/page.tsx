@@ -11,7 +11,7 @@ import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 interface Post {
   title: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: { category: Category }[];
 }
 
@@ -45,7 +45,7 @@ const BlogEditPage: React.FC = () => {
         const data: ApiResponse = await res.json();
         setTitle(data.post.title);
         setContent(data.post.content);
-        setThumbnailImageKey(data.post.thumbnailUrl);
+        setThumbnailImageKey(data.post.thumbnailImageKey);
         setSelectCategories(
           data.post.postCategories.map((c) => c.category.id)
         );
@@ -104,7 +104,7 @@ const BlogEditPage: React.FC = () => {
 
   return (
     <div className={styles.n_main}>
-      <h2>記事編集</h2>
+      <h2 className={styles.h2}>記事編集</h2>
       <PostForm
         mode="edit"
         title={title}

@@ -83,7 +83,7 @@ const EditCategoryPage = () => {
   return (
     <>
       <div className={styles.main}>
-        <h2>カテゴリー編集</h2>
+        <h2 className={styles.h2}>カテゴリー編集</h2>
         <PostForm
           mode="edit"
           name={name}
