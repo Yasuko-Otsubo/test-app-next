@@ -43,6 +43,14 @@ const CategoryNewPage: React.FC = () => {
     e.preventDefault();
 
     if(!token) return;
+
+    if (categories.find((category) => category.name === name)) {
+      setErrorMessage(
+        "このカテゴリー名は重複しています。別の名前を使用してください"
+      );
+      return;
+    }
+  
     try {
       await fetch(`/api/admin/categories`, {
         method: "POST",
@@ -62,12 +70,6 @@ const CategoryNewPage: React.FC = () => {
     }
   };
 
-  if (categories.find((category) => category.name === name)) {
-    setErrorMessage(
-      "このカテゴリー名は重複しています。別の名前を使用してください"
-    );
-    return;
-  }
 
   return (
     <>
