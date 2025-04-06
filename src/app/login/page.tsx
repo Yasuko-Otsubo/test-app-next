@@ -15,7 +15,7 @@ export default function FormBasic() {
      const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
      });
 
-     const onsubmit: SubmitHandler<FormData> = async (data) => {
+     const onsubmit = async () => {
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,

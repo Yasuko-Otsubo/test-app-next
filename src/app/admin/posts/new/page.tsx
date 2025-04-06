@@ -16,7 +16,7 @@ const BlogNewPage: React.FC = () => {
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
 
   // POST
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (data: FormValue) => {
     e.preventDefault();
 
     if(!token) return;

@@ -4,6 +4,14 @@ import SelectCategories from "./SelectCategories";
 import { supabase } from '@/utils/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import Image from "next/image";
+import { Controller, useForm } from "react-hook-form";
+
+type FormValue = {
+  title: string;
+  content: string;
+  thumbnailImageKey: string;
+  categories: number[];
+}
 
 //Propsを定義
 interface Props {
@@ -18,23 +26,27 @@ interface Props {
   selectCategories: number[]; // 現在選択されているカテゴリーのID
   setSelectCategories: (categories: number[]) => void;
   //allCategories?: Category[]; // すべてのカテゴリー
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (data: FormValue) => void;
   onDelete?: () => void;
 }
 
 export const PostForm: React.FC<Props> = ({
   mode,
-  title,
-  setTitle,
-  content,
-  setContent,
   thumbnailImageKey,
-  setThumbnailImageKey,
-  setSelectCategories,
   selectCategories,
   onSubmit,
   onDelete,
 }) => {
+
+  const { register, handleSubmit, control, setValue, watch } = useForm<FormValue>({
+    defaultValues: {
+      title: '',
+      content: '',
+      thumbnailImageKey: thumbnailImageKey || '',
+      categories: selectCategories || [],
+    },
+  });
+  
   const [thumbnailImageUrl, setThumbnailImageUrl] = useState<null | string>(
     null,
   )
@@ -70,7 +82,8 @@ export const PostForm: React.FC<Props> = ({
     console.log("アップロード成功:", data);
 
     // data.pathに画像のパスが格納されているので、thumbnailImageKeyに格納
-    setThumbnailImageKey(data.path)
+    watch("thumbnailImageKey")
+    setValue("thumbnailImageKey", data.path)
   }
 
   // DBに保存しているthumbnailImageKeyを元に、Supabaseから画像のURLを取得する
@@ -90,34 +103,34 @@ export const PostForm: React.FC<Props> = ({
 
     fetcher()
   }, [thumbnailImageKey])
-
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.n_article}>
         <label>タイトル</label>
         <input
           type="text"
+          {...register ("title", {
+            required: 'タイトルを入力してください',
+          })}
           id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
         />
       </div>
       <div className={styles.n_article}>
         <label>内容</label>
         <textarea
           id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          {...register("content", {
+          })}
         />
       </div>
       <div className={styles.n_article}>
         <label htmlFor="thumbnailImageKey">サムネイルURL</label>
-        <input
-          type="file"
-          id="thumbnailImageKey"
-          onChange={handleImageChange}
-          accept="image/*"
-        />
+          <input
+            type="file"
+            id="thumbnailImageKey"
+            onChange={handleImageChange}
+            accept="image/*"
+          />
         {thumbnailImageUrl && (
           <div>
             <Image
@@ -132,9 +145,15 @@ export const PostForm: React.FC<Props> = ({
       </div>
       <div className={styles.n_article}>
         <label>カテゴリー</label>
-        <SelectCategories
-          selectCategories={selectCategories}
-          setCategories={setSelectCategories}
+        <Controller
+          name="categories"
+          control={control}
+          render={({ field }) => (
+          <SelectCategories
+            selectCategories={field.value}
+            setCategories={field.onChange}
+          />
+          )}
         />
       </div>
       <div className={styles.e_btn}>
