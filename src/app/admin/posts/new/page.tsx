@@ -1,24 +1,28 @@
 "use client";
 
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
 import styles from "../_styles/main.module.css";
 import { useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
+type FormValue = {
+  title: string;
+  content: string;
+  thumbnailImageKey: string;
+  categories: number[];
+};
+
 const BlogNewPage: React.FC = () => {
   const router = useRouter();
   const { token } = useSupabaseSession();
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [thumbnailImageKey, setThumbnailImageKey] = useState("");
   const [selectCategories, setSelectCategories] = useState<number[]>([]);
 
   // POST
-  const handleSubmit = (data: FormValue) => {
-    e.preventDefault();
-
+  const handleSubmit = async(data: FormValue) => {
     if(!token) return;
 
     try {
@@ -29,10 +33,10 @@ const BlogNewPage: React.FC = () => {
           Authorization: token,
        },
         body: JSON.stringify({
-          title,
-          content,
-          thumbnailImageKey,
-          categories: selectCategories.map((id) => ({ id })),
+          title: data.title,
+          content: data.content,
+          thumbnailImageKey: data.thumbnailImageKey,
+          categories: data.categories.map((id) => ({ id })),
         }),
       });
       alert("新規作成しました");

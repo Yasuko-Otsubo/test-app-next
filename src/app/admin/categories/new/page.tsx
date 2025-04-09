@@ -7,6 +7,10 @@ import { Category } from "@/app/_types/Categories";
 import { PostForm } from "../_components/CategoryForm";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
+type FormValue = {
+  name: string;
+}
+
 const CategoryNewPage: React.FC = () => {
   const [name, setName] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -39,9 +43,7 @@ const CategoryNewPage: React.FC = () => {
     fetchCategories();
   }, [token]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async (data: FormValue) => {
     if(!token) return;
 
     if (categories.find((category) => category.name === name)) {
@@ -59,7 +61,7 @@ const CategoryNewPage: React.FC = () => {
           Authorization: token,
        },
         body: JSON.stringify({
-          name,
+          name: data.name,
         }),
       });
       alert("新規作成しました");

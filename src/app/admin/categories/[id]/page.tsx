@@ -1,12 +1,13 @@
 "use client";
 
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/CategoryForm";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
+import { SubmitHandler } from "react-hook-form";
 
-type Category = { name: string };
+type FormValue = { name: string };
 
 const EditCategoryPage = () => {
   const [name, setName] = useState("");
@@ -27,7 +28,7 @@ const EditCategoryPage = () => {
             Authorization: token,
           },
         });
-        const data: { category: Category } = await res.json();
+        const data: { category: FormValue } = await res.json();
         setName(data.category.name);
       } catch (error) {
         console.log("カテゴリーの取得失敗", error);
@@ -37,11 +38,8 @@ const EditCategoryPage = () => {
     fetchPost();
   }, [id, token]);
 
-  //
-
   //PUT
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit: SubmitHandler<FormValue> = async(data) => {
     if(!token) return;
     try {
       await fetch(`/api/admin/categories/${id}`, {
@@ -51,7 +49,7 @@ const EditCategoryPage = () => {
           Authorization: token,
          },
         body: JSON.stringify({
-          name,
+          name: data.name,
         }),
       });
       alert("更新しました");

@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../_styles/main.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
 import { Category } from "@/app/_types/Categories";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
+type FormValue = {
+  title: string;
+  content: string;
+  thumbnailImageKey: string;
+  categories: number[];
+};
 
 interface Post {
   title: string;
@@ -59,8 +65,7 @@ const BlogEditPage: React.FC = () => {
 
 
   // PUT
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: FormValue) => {
     if(!token) return; 
     try {
       await fetch(`/api/admin/posts/${id}`, {
@@ -70,10 +75,10 @@ const BlogEditPage: React.FC = () => {
           Authorization: token,
          },
         body: JSON.stringify({
-          title,
-          content,
-          thumbnailImageKey,
-          categories: selectCategories.map((id) => ({ id })),
+          title: data.title,
+          content: data.content,
+          thumbnailImageKey: data.thumbnailImageKey,
+          categories: data.categories.map((id) => ({ id })),
         }),
       });
       alert("更新しました");
@@ -113,7 +118,6 @@ const BlogEditPage: React.FC = () => {
         setContent={setContent}
         thumbnailImageKey={thumbnailImageKey}
         setThumbnailImageKey={setThumbnailImageKey}
-        //allCategories={allCategories}
         selectCategories={selectCategories}
         setSelectCategories={setSelectCategories}
         onSubmit={handleSubmit}

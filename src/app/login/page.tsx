@@ -2,7 +2,7 @@
 
 import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
-import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitErrorHandler, useForm } from "react-hook-form";
 
 type FormData = {
   email: string;
@@ -15,7 +15,7 @@ export default function FormBasic() {
      const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
      });
 
-     const onsubmit = async () => {
+     const onsubmit = async (data: FormData) => {
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,

@@ -20,18 +20,18 @@ interface Props {
   setTitle: (title: string) => void;
   content: string;
   setContent: (content: string) => void;
-  thumbnailImageKey: string
+  thumbnailImageKey: string;
   setThumbnailImageKey: (thumbnailImageKey: string) => void
-  //categories: Category[];
   selectCategories: number[]; // 現在選択されているカテゴリーのID
   setSelectCategories: (categories: number[]) => void;
-  //allCategories?: Category[]; // すべてのカテゴリー
-  onSubmit: (data: FormValue) => void;
+  onSubmit: (data: FormValue) => Promise<void>;
   onDelete?: () => void;
 }
 
 export const PostForm: React.FC<Props> = ({
   mode,
+  title,
+  content,
   thumbnailImageKey,
   selectCategories,
   onSubmit,
@@ -40,8 +40,8 @@ export const PostForm: React.FC<Props> = ({
 
   const { register, handleSubmit, control, setValue, watch } = useForm<FormValue>({
     defaultValues: {
-      title: '',
-      content: '',
+      title,
+      content,
       thumbnailImageKey: thumbnailImageKey || '',
       categories: selectCategories || [],
     },
@@ -50,7 +50,15 @@ export const PostForm: React.FC<Props> = ({
   const [thumbnailImageUrl, setThumbnailImageUrl] = useState<null | string>(
     null,
   )
-  const handleImageChange = async (
+
+  useEffect(() => {
+    setValue("title", title);
+    setValue("content", content);
+    setValue("thumbnailImageKey", thumbnailImageKey || '');
+    setValue("categories", selectCategories);
+  }, [title, content, thumbnailImageKey, selectCategories, setValue]);
+  
+    const handleImageChange = async (
     event: ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
     if (!event.target.files || event.target.files.length == 0) {
