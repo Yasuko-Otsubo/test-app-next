@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css";
 import { useRouter } from "next/navigation";
 import { Category } from "@/app/_types/Categories";
-import { PostForm } from "../_components/CategoryForm";
+import { CategoryForm } from "../_components/CategoryForm";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 type FormValue = {
@@ -12,11 +12,10 @@ type FormValue = {
 }
 
 const CategoryNewPage: React.FC = () => {
-  const [name, setName] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
   const { token } = useSupabaseSession();
+  const [categories, setCategories] = useState<Category[]>([]);
+  
 
   useEffect(() => {
     if(!token) return;
@@ -46,13 +45,14 @@ const CategoryNewPage: React.FC = () => {
   const handleSubmit = async (data: FormValue) => {
     if(!token) return;
 
-    if (categories.find((category) => category.name === name)) {
-      setErrorMessage(
-        "このカテゴリー名は重複しています。別の名前を使用してください"
-      );
+    const isDuplicate = categories.some(
+      (category) => category.name === data.name
+    );
+    if (isDuplicate) {
+      alert("このカテゴリー名は重複しています。別の名前を使用してください");
       return;
     }
-  
+
     try {
       await fetch(`/api/admin/categories`, {
         method: "POST",
@@ -77,12 +77,10 @@ const CategoryNewPage: React.FC = () => {
     <>
       <div className={styles.main}>
         <h2 className={styles.h2}>カテゴリー作成</h2>
-        <PostForm
+        <CategoryForm
           mode="new"
-          name={name}
-          setName={setName}
-          onSubmit={handleSubmit}
-          errorMessage={errorMessage}
+        initialName=""
+        onSubmit={handleSubmit}
         />
       </div>
     </>

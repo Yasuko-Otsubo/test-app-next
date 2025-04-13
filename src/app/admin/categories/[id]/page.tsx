@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 import styles from "../_styles/categories.module.css";
 import { useParams, useRouter } from "next/navigation";
-import { PostForm } from "../_components/CategoryForm";
+import { CategoryForm } from "../_components/CategoryForm";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { SubmitHandler } from "react-hook-form";
 
 type FormValue = { name: string };
 
 const EditCategoryPage = () => {
-  const [name, setName] = useState("");
+  const [initialName, setInitialName] = useState(""); 
   const { id } = useParams();
   const router = useRouter();
   console.log("取得したID:", id); // デバッグ用
@@ -20,7 +20,7 @@ const EditCategoryPage = () => {
   useEffect(() => {
     if(!token) return;
 
-    const fetchPost = async () => {
+    const fetchCategory = async () => {
       try {
         const res = await fetch(`/api/admin/categories/${id}`,{
           headers: {
@@ -29,13 +29,13 @@ const EditCategoryPage = () => {
           },
         });
         const data: { category: FormValue } = await res.json();
-        setName(data.category.name);
+        setInitialName(data.category.name);
       } catch (error) {
         console.log("カテゴリーの取得失敗", error);
         alert("カテゴリーの取得に失敗しました");
       }
     };
-    fetchPost();
+    fetchCategory();
   }, [id, token]);
 
   //PUT
@@ -82,10 +82,9 @@ const EditCategoryPage = () => {
     <>
       <div className={styles.main}>
         <h2 className={styles.h2}>カテゴリー編集</h2>
-        <PostForm
+        <CategoryForm
           mode="edit"
-          name={name}
-          setName={setName}
+          initialName={initialName}
           onSubmit={handleSubmit}
           onDelete={handleDelete}
         />

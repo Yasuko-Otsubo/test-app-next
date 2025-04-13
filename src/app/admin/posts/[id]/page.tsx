@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../_styles/main.module.css";
 import { useParams, useRouter } from "next/navigation";
 import { PostForm } from "../_components/PostForm";
@@ -28,12 +28,9 @@ interface ApiResponse {
 const BlogEditPage: React.FC = () => {
   const { id } = useParams();
   const router = useRouter();
-
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
-  const [selectCategories, setSelectCategories] = useState<number[]>([]);
   const { token } = useSupabaseSession();
+  const [initialData, setInitialData] = useState<FormValue | undefined>(undefined);
+
 
   // GET
   useEffect(() => {
@@ -48,13 +45,15 @@ const BlogEditPage: React.FC = () => {
           },
         }
         );
+
         const data: ApiResponse = await res.json();
-        setTitle(data.post.title);
-        setContent(data.post.content);
-        setThumbnailImageKey(data.post.thumbnailImageKey);
-        setSelectCategories(
-          data.post.postCategories.map((c) => c.category.id)
-        );
+        const formatted: FormValue = {
+          title: data.post.title,
+          content: data.post.content,
+          thumbnailImageKey: data.post.thumbnailImageKey,
+          categories: data.post.postCategories.map((c) => c.category.id),
+        };
+        setInitialData(formatted);
       } catch (error) {
         console.log("記事の取得失敗", error);
         alert("記事取得できませんでした。");
@@ -89,6 +88,7 @@ const BlogEditPage: React.FC = () => {
     }
   };
 
+
   // DELETE
   const handleDelete = async () => {
     if(!token) return;
@@ -110,19 +110,16 @@ const BlogEditPage: React.FC = () => {
   return (
     <div className={styles.n_main}>
       <h2 className={styles.h2}>記事編集</h2>
+      {initialData ? (
       <PostForm
         mode="edit"
-        title={title}
-        setTitle={setTitle}
-        content={content}
-        setContent={setContent}
-        thumbnailImageKey={thumbnailImageKey}
-        setThumbnailImageKey={setThumbnailImageKey}
-        selectCategories={selectCategories}
-        setSelectCategories={setSelectCategories}
+        initialData={initialData}
         onSubmit={handleSubmit}
         onDelete={handleDelete}
       />
+    ) : (
+      <p>読み込み中...</p>
+    )}
     </div>
   );
 };

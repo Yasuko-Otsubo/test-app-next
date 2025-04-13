@@ -1,6 +1,8 @@
+"use client";
+
 import { useForm } from "react-hook-form";
 import styles from "../_styles/categories.module.css";
-import React from "react";
+import React, { useEffect } from "react";
 
 type FormValue = {
   name: string;
@@ -8,28 +10,30 @@ type FormValue = {
 
 interface Props {
   mode: "new" | "edit";
-  name: string;
-  setName: (name: string) => void;
+  initialName?: string;
   onSubmit: (data: FormValue) => void;
   errorMessage?: string;
   onDelete?: () => void;
 }
 
-export const PostForm: React.FC<Props> = ({
+export const CategoryForm: React.FC<Props> = ({
   mode,
-  name,
-  setName,
+  initialName = '',
   onSubmit,
   onDelete,
   errorMessage,
 }) => {
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValue>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, 
+} = useForm<FormValue>({
     defaultValues: {
-      name,
+      name: initialName
     },
   });
 
+  useEffect (() =>{
+    setValue("name", initialName);
+  },[initialName, setValue]);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.n_article}>
@@ -40,8 +44,6 @@ export const PostForm: React.FC<Props> = ({
           {...register("name", {
             required: '名前を入力して下さい',
           })}
-          value={name}  // use `name` from state to control the value
-          onChange={(e) => setName(e.target.value)}  // still update local state, if needed
         />
         {errors.name && <p className={styles.error}>{errors.name.message}</p>}
       </div>
@@ -51,7 +53,7 @@ export const PostForm: React.FC<Props> = ({
             {mode === "edit" ? "更新" : "作成"}
           </button>
           {onDelete && (
-            <button type="button" onClick={onDelete}>
+            <button type="button" onClick={onDelete} disabled={isSubmitting}>
               削除
             </button>
           )}

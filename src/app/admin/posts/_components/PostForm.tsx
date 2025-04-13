@@ -16,6 +16,7 @@ type FormValue = {
 //Propsを定義
 interface Props {
   mode: "new" | "edit";
+  /*
   title: string;
   setTitle: (title: string) => void;
   content: string;
@@ -24,40 +25,46 @@ interface Props {
   setThumbnailImageKey: (thumbnailImageKey: string) => void
   selectCategories: number[]; // 現在選択されているカテゴリーのID
   setSelectCategories: (categories: number[]) => void;
+  */
+  initialData?: FormValue;
   onSubmit: (data: FormValue) => Promise<void>;
   onDelete?: () => void;
 }
 
 export const PostForm: React.FC<Props> = ({
   mode,
+  /*
   title,
   content,
   thumbnailImageKey,
   selectCategories,
+  */
+  initialData,
   onSubmit,
   onDelete,
 }) => {
 
   const { register, handleSubmit, control, setValue, watch } = useForm<FormValue>({
-    defaultValues: {
-      title,
-      content,
-      thumbnailImageKey: thumbnailImageKey || '',
-      categories: selectCategories || [],
+    defaultValues: initialData || {
+      title: '',
+      content: '',
+      thumbnailImageKey: '',
+      categories: [],
     },
   });
+  const thumbnailImageKey = watch("thumbnailImageKey");
   
   const [thumbnailImageUrl, setThumbnailImageUrl] = useState<null | string>(
     null,
   )
-
+/*
   useEffect(() => {
     setValue("title", title);
     setValue("content", content);
     setValue("thumbnailImageKey", thumbnailImageKey || '');
     setValue("categories", selectCategories);
   }, [title, content, thumbnailImageKey, selectCategories, setValue]);
-  
+  */
     const handleImageChange = async (
     event: ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
